@@ -24,24 +24,33 @@ response_content = BeautifulSoup(
 )  # create a BeautifulSoup object by passing in the response content while specifying the parser to use
 
 
-# ========= to review !! imported & saved data are not correct =========
-# Find the <h3> tag containing the book title
-title_element = response_content.find("h3")
-# Find the <p> tag containing the price
-price_element = response_content.find("p", class_="price_colour")
-# ========= to review !! imported & saved data are not correct =========
+book_containers = response_content.find_all(
+    "article", class_="product_pod"
+)  # Find all the book containers
 
-rows = [
-    {"Title": title_element, "Price": price_element}
-]  # Create a list of dictionaries (rows) to hold the extracted data
+book_data = []  # Initialize a list to store the extracted data
 
-filename = "book_data.csv"  # Define filename for the CSV file
+for container in book_containers:  # Iterate over each book container
+    # Extract the title and price for each book
+    title = container.h3.a.text
+    price = container.find("p", class_="price_color").text
+
+    book_data.append({"Title": title, "Price": price})
+
+folder_path = input(
+    "Enter the desired folder path: "
+)  # Prompt the user to enter the desired folder path
+
+filename = os.path.join(
+    folder_path, "book_data.csv"
+)  # Define filename for the CSV file
 
 # Write the data to the CSV file
 with open(filename, "w", newline="") as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=rows[0].keys())
+    fieldnames = ["Title", "Price"]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
-    writer.writerows(rows)
+    writer.writerows(book_data)
 
 print(f"Data extraction successful. Saved as {filename}")  # Print success message
 
