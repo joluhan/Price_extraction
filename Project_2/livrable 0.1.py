@@ -1,15 +1,13 @@
 # ============================== Étape 2 : Extraire les données d’un seul produit ==============================
 
-import requests  # librairy to make HTTP requests and interact with web ressources
-from bs4 import (
-    BeautifulSoup,
-)  # Importing BeautifulSoup from the bs4 module for HTML parsing and manipulation
-import csv  # Import the csv module for reading and writing CSV files
-import os  # Import the os module for operating system-related functionalities
+import requests
+from bs4 import BeautifulSoup
+import csv
+import os
 
 url = "http://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"  # variable creation of page to be scraped
 
-response = requests.get(url)  # variable requesting opening the website
+response = requests.get(url)  # Send a GET request to the URL
 
 # condition to check if access to the website susscessful or not
 if response.status_code == 200:
