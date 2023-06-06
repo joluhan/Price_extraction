@@ -56,14 +56,14 @@ for container in book_containers:
         }
     )
 
+# Prompt the user to enter the desired folder path
+csv_location = input("Enter the desired folder path: ")
 
-folder_path = input(
-    "Enter the desired folder path: "
-)  # Prompt the user to enter the desired folder path
-
-filename = os.path.join(
-    folder_path, "book_data.csv"
-)  # Define filename for the CSV file
+# Define filename for the CSV file
+csv_filename = input("Please enter the filename: ")
+# Replace with the actual folder path
+folder_path = "path/to/folder"
+file_path = os.path.join(folder_path, csv_filename + ".csv")
 
 # Write the data to the CSV file
 # Define the column names for the CSV file
@@ -81,11 +81,11 @@ fieldnames = [
 ]
 
 # Write the data to the CSV file
-with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+with open(f"{csv_location}/{csv_filename}.csv", "w", newline="") as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
     writer.writerows(book_data)
 
-print(f"Data extraction successful. Saved as {filename}")  # Print success message
+print(f"Data extraction successful. Saved as {csv_filename}")  # Print success message
 
-print(f"Location: {os.path.abspath(filename)}")  # Print location of data file
+print(f"Location: {os.path.abspath(csv_filename)}")  # Print location of data file
