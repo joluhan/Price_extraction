@@ -23,6 +23,9 @@ soup = BeautifulSoup(response.content, "html.parser")
 # Find all the book containers
 book_containers = soup.find_all("article", class_="product_pod")
 
+# ==>> ajouter une fonction qui rentre dans chaque page pour extraire les données
+# ===>> prendre en compte si "next" parcourir toute les pages
+
 book_data = []  # Initialize a list to store the extracted data
 
 for container in book_containers:

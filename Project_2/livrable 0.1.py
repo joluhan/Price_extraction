@@ -32,10 +32,12 @@ category = soup.find("a", href="../category/books/poetry_23/index.html").string
 
 review_rating = soup.find("p", class_="star-rating")["class"][1]
 image_url = soup.find("div", {"id": "product_gallery"}).find("img")["src"]
+# ===>> mettre l'url absolue
 
 # Specify the filename and location to save the CSV file
 csv_filename = input("Enter the filename for the CSV file (without extension): ")
 csv_location = input("Enter the location to save the CSV file: ")
+# ===> mettre nom + location défault
 
 # Prepare the data to write to the CSV file
 data = [
