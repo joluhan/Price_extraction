@@ -1,89 +1,91 @@
 # ============================== Étape 2 : Extraire les données de tout une catégorie ==============================
 
-import requests
-from bs4 import BeautifulSoup
-import csv
+import requests  # librairy to make HTTP requests and interact with web ressources
+from bs4 import (
+    BeautifulSoup,
+)  # Importing BeautifulSoup from the bs4 module for HTML parsing and manipulation
+import csv  # Import the csv module for reading and writing CSV files
+import os  # Import the os module for operating system-related functionalities
 
-# Specify the URL to scrape
-category_url = "http://books.toscrape.com/catalogue/category/books/poetry_23/index.html"
+url = "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"  # variable creation of website I want to scrape
 
-# Send a GET request to the URL
-category_response = requests.get(category_url)
+response = requests.get(url)  # variable requesting opening the website
 
-# Create a BeautifulSoup object to parse the HTML content
-category_soup = BeautifulSoup(category_response.content, "html.parser")
+# condition to check if access to the website susscessful or not
+if response.status_code == 200:
+    print(f"access to {url} successful")
+else:
+    print(f"access to {url} unsuccessful")
 
-# Find the total number of pages in the category
-pager = category_soup.find("ul", class_="pager")
-last_page_url = (
-    pager.find("li", class_="current").find_next_siblings("li").find("a")["href"]
-)
-total_pages = int(last_page_url.split("/")[-2])
+# create a BeautifulSoup object by passing in the response content while specifying the parser to use
+soup = BeautifulSoup(response.content, "html.parser")
 
-# Create an empty list to store the book URLs
-book_urls = []
+# Find all the book containers
+book_containers = soup.find_all("article", class_="product_pod")
 
-# Iterate over each page of the category
-for page in range(1, total_pages + 1):
-    # Construct the URL of the current page
-    current_page_url = category_url.replace("index.html", f"page-{page}.html")
+book_data = []  # Initialize a list to store the extracted data
+
+for container in book_containers:
+    product_page_url = container.h3.a
+    universal_product_code = soup.find("th", string="UPC")
+    title = soup.find("h1").string
+    price_including_tax = soup.find("th", string="Price (incl. tax)")
+    price_excluding_tax = soup.find("th", string="Price (excl. tax)")
+    number_available = soup.find("th", string="Availability")
+    product_description = soup.find("div", {"id": "product_description"})
+    category = soup.find("a", href="../category/books/poetry_23/index.html")
+
+    review_rating = soup.find("p", class_="star-rating")["class"][1]
+    image_url = soup.find("img")
+
+    # title = container.h3.a.text
+    # price = container.find("p", class_="price_color").text
+
+    book_data.append(
+        {
+            "Pdt url": product_page_url,
+            "UPC": universal_product_code,
+            "Title": title,
+            "Price incl VAT": price_including_tax,
+            "Price excl VAT": price_excluding_tax,
+            "Nb available": number_available,
+            "Pdt description": product_description,
+            "Category": category,
+            "Review Rating": review_rating,
+            "Img url": image_url,
+        }
+    )
 
 
-# # Extract the desired information
-# product_page_url = url
-# universal_product_code = soup.find("th", string="UPC").find_next_sibling("td").string
-# title = soup.find("h1").string
-# price_including_tax = (
-#     soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
-# )
-# price_excluding_tax = (
-#     soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
-# )
-# number_available = soup.find("th", string="Availability").find_next_sibling("td").string
-# product_description = (
-#     soup.find("div", {"id": "product_description"}).find_next("p").string.strip()
-# )
-# category = soup.find("a", href="../category/books/poetry_23/index.html").string
+folder_path = input(
+    "Enter the desired folder path: "
+)  # Prompt the user to enter the desired folder path
 
-# review_rating = soup.find("p", class_="star-rating")["class"][1]
-# image_url = soup.find("div", {"id": "product_gallery"}).find("img")["src"]
+filename = os.path.join(
+    folder_path, "book_data.csv"
+)  # Define filename for the CSV file
 
-# # Specify the filename and location to save the CSV file
-# csv_filename = input("Enter the filename for the CSV file (without extension): ")
-# csv_location = input("Enter the location to save the CSV file: ")
+# Write the data to the CSV file
+# Define the column names for the CSV file
+fieldnames = [
+    "Pdt url",
+    "UPC",
+    "Title",
+    "Price incl VAT",
+    "Price excl VAT",
+    "Nb available",
+    "Pdt description",
+    "Category",
+    "Review Rating",
+    "Img url",
+]
 
-# # Prepare the data to write to the CSV file
-# data = [
-#     [
-#         "product_page_url",
-#         "universal_product_code",
-#         "title",
-#         "price_including_tax",
-#         "price_excluding_tax",
-#         "number_available",
-#         "product_description",
-#         "category",
-#         "review_rating",
-#         "image_url",
-#     ],
-#     [
-#         product_page_url,
-#         universal_product_code,
-#         title,
-#         price_including_tax,
-#         price_excluding_tax,
-#         number_available,
-#         product_description,
-#         category,
-#         review_rating,
-#         image_url,
-#     ],
-# ]
+# Write the data to the CSV file
+with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(book_data)
 
-# # Write the data to the CSV file
-# with open(f"{csv_location}/{csv_filename}.csv", "w", newline="") as csvfile:
-#     writer = csv.writer(csvfile)
-#     writer.writerows(data)
+print(f"Data extraction successful. Saved as {filename}")  # Print success message
 
-# # Print the success message
-# print(f"Data has been successfully saved to {csv_location}\{csv_filename}.csv.")
+print(f"Location: {os.path.abspath(filename)}")  # Print location of data file
