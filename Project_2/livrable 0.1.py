@@ -1,53 +1,74 @@
-# ============================== Étape 2 : Extraire les données d’un seul produit ==============================
+# ============================== Étape 1 : Extraire les données d’un seul produit ==============================
+
 
 import requests
 from bs4 import BeautifulSoup
 import csv
-import os
 
-url = "http://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"  # variable creation of page to be scraped
+# Specify the URL to scrape
+url = "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
 
-response = requests.get(url)  # Send a GET request to the URL
+# Send a GET request to the URL
+response = requests.get(url)
 
-# condition to check if access to the website susscessful or not
-if response.status_code == 200:
-    print(f"access to {url} successful")
-else:
-    print(f"access to {url} unsuccessful")
+# Create a BeautifulSoup object to parse the HTML content
+soup = BeautifulSoup(response.content, "html.parser")
 
-content_page = response.text  # print to check content of website
+# Extract the desired information
+product_page_url = url
+universal_product_code = soup.find("th", string="UPC").find_next_sibling("td").string
+title = soup.find("h1").string
+price_including_tax = (
+    soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
+)
+price_excluding_tax = (
+    soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
+)
+number_available = soup.find("th", string="Availability").find_next_sibling("td").string
+product_description = (
+    soup.find("div", {"id": "product_description"}).find_next("p").string.strip()
+)
+category = soup.find("a", href="../category/books/poetry_23/index.html").string
 
-response_content = BeautifulSoup(
-    response.content, "html.parser"
-)  # create a BeautifulSoup object by passing in the response content while specifying the parser to use
+review_rating = soup.find("p", class_="star-rating")["class"][1]
+image_url = soup.find("div", {"id": "product_gallery"}).find("img")["src"]
 
-book_container = response_content.find(
-    "article", class_="product_page"
-)  # Find the book container for the specific book
+# Specify the filename and location to save the CSV file
+csv_filename = input("Enter the filename for the CSV file (without extension): ")
+csv_location = input("Enter the location to save the CSV file: ")
 
-# Extract the title and price for the book
-title_element = book_container.find("h1")
-title = title_element.text.strip() if title_element else ""
-price_element = book_container.find("p", class_="price_color")
-price = price_element.text.strip() if price_element else ""
-book_data = [{"Title": title, "Price": price}]
-
-folder_path = input(
-    "Enter the desired folder path: "
-)  # Prompt the user to enter the desired folder path
-
-name_file_result = input("Give a name to the file: ")
-
-filename = os.path.join(
-    folder_path, name_file_result + ".csv"
-)  # Define filename for the CSV file
+# Prepare the data to write to the CSV file
+data = [
+    [
+        "product_page_url",
+        "universal_product_code",
+        "title",
+        "price_including_tax",
+        "price_excluding_tax",
+        "number_available",
+        "product_description",
+        "category",
+        "review_rating",
+        "image_url",
+    ],
+    [
+        product_page_url,
+        universal_product_code,
+        title,
+        price_including_tax,
+        price_excluding_tax,
+        number_available,
+        product_description,
+        category,
+        review_rating,
+        image_url,
+    ],
+]
 
 # Write the data to the CSV file
-with open(filename, "w", newline="") as csvfile:
-    fieldnames = ["Title", "Price"]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(book_data)
+with open(f"{csv_location}/{csv_filename}.csv", "w", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerows(data)
 
-print(f"Data extraction successful. Saved as {filename}")  # Print success message
-print(f"Location: {os.path.abspath(filename)}")  # Print location of data file
+# Print the success message
+print(f"Data has been successfully saved to {csv_location}\{csv_filename}.csv.")
