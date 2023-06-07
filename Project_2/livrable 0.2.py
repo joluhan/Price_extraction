@@ -23,9 +23,12 @@ soup = BeautifulSoup(response.content, "html.parser")
 # Find all the book containers
 book_containers = soup.find_all("article", class_="product_pod")
 
-# ==>> ajouter une fonction qui rentre dans chaque page pour extraire les données
-
-# ===>> prendre en compte si "next" parcourir toute les pages
+# ========================= TO ADD =========================
+# ==>> ajouter une loop qui rentre dans chaque page pour extraire les données
+# for into_page(range 21):
+# ===>> prendre en compte si "next" parcourir toute les pages, faire une def
+# def turn_the_page():
+# ========================= TO ADD =========================
 
 book_data = []  # Initialize a list to store the extracted data
 
@@ -42,8 +45,10 @@ for container in book_containers:
     review_rating = soup.find("p", class_="star-rating")["class"][1]
     image_url = soup.find("img")
 
+    # ========================= reminders soup.find =========================
     # title = container.h3.a.text
     # price = container.find("p", class_="price_color").text
+    # ========================= reminders soup.find =========================
 
     book_data.append(
         {
@@ -99,5 +104,5 @@ with open(filepath, "w", newline="") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerows(fieldnames)
 
-# Print the success message
+# Print success message
 print(r"Data has been successfully saved to C:\Users\johan\Desktop\book_data.csv")
