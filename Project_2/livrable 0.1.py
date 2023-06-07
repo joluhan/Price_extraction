@@ -4,6 +4,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import os
 
 # Specify the URL to scrape
 url = "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
@@ -34,11 +35,6 @@ review_rating = soup.find("p", class_="star-rating")["class"][1]
 image_url = soup.find("div", {"id": "product_gallery"}).find("img")["src"]
 # ===>> mettre l'url absolue (faire recheche absolute & relative path)
 
-# Specify the filename and location to save the CSV file
-csv_filename = input("Enter the filename for the CSV file (without extension): ")
-csv_location = input("Enter the location to save the CSV file: ")
-# ===> mettre nom + location défault
-
 # Prepare the data to write to the CSV file
 data = [
     [
@@ -68,9 +64,13 @@ data = [
 ]
 
 # Write the data to the CSV file
-with open(f"{csv_location}/{csv_filename}.csv", "w", newline="") as csvfile:
+directory = r"C:\Users\johan\Desktop"
+filename = "book_data.csv"
+filepath = os.path.join(directory, filename)
+
+with open(filepath, "w", newline="") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerows(data)
 
 # Print the success message
-print(f"Data has been successfully saved to {csv_location}\{csv_filename}.csv.")
+print(r"Data has been successfully saved to C:\Users\johan\Desktop\book_data.csv")

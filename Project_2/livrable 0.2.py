@@ -24,6 +24,7 @@ soup = BeautifulSoup(response.content, "html.parser")
 book_containers = soup.find_all("article", class_="product_pod")
 
 # ==>> ajouter une fonction qui rentre dans chaque page pour extraire les données
+
 # ===>> prendre en compte si "next" parcourir toute les pages
 
 book_data = []  # Initialize a list to store the extracted data
@@ -59,36 +60,44 @@ for container in book_containers:
         }
     )
 
-# Prompt the user to enter the desired folder path
-csv_location = input("Enter the desired folder path: ")
-
-# Define filename for the CSV file
-csv_filename = input("Please enter the filename: ")
-# Replace with the actual folder path
-folder_path = "path/to/folder"
-file_path = os.path.join(folder_path, csv_filename + ".csv")
 
 # Write the data to the CSV file
 # Define the column names for the CSV file
 fieldnames = [
-    "Pdt url",
-    "UPC",
-    "Title",
-    "Price incl VAT",
-    "Price excl VAT",
-    "Nb available",
-    "Pdt description",
-    "Category",
-    "Review Rating",
-    "Img url",
+    [
+        "product_page_url",
+        "universal_product_code",
+        "title",
+        "price_including_tax",
+        "price_excluding_tax",
+        "number_available",
+        "product_description",
+        "category",
+        "review_rating",
+        "image_url",
+    ],
+    [
+        product_page_url,
+        universal_product_code,
+        title,
+        price_including_tax,
+        price_excluding_tax,
+        number_available,
+        product_description,
+        category,
+        review_rating,
+        image_url,
+    ],
 ]
 
 # Write the data to the CSV file
-with open(f"{csv_location}/{csv_filename}.csv", "w", newline="") as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
-    writer.writerows(book_data)
+directory = r"C:\Users\johan\Desktop"
+filename = "book_data.csv"
+filepath = os.path.join(directory, filename)
 
-print(f"Data extraction successful. Saved as {csv_filename}")  # Print success message
+with open(filepath, "w", newline="") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerows(fieldnames)
 
-print(f"Location: {os.path.abspath(csv_filename)}")  # Print location of data file
+# Print the success message
+print(r"Data has been successfully saved to C:\Users\johan\Desktop\book_data.csv")
