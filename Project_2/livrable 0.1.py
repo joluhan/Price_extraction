@@ -12,6 +12,12 @@ url = "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
 # Send a GET request to the URL
 response = requests.get(url)
 
+# Check if the request was successful
+if response.status_code == 200:
+    print(f"Access to {url} successful")
+else:
+    print(f"Access to {url} unsuccessful")
+
 # Create a BeautifulSoup object to parse the HTML content
 soup = BeautifulSoup(response.content, "html.parser")
 
