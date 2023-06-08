@@ -1,108 +1,101 @@
-# ============================== Étape 2 : Extraire les données de tout une catégorie ==============================
+import requests
+from bs4 import BeautifulSoup
+import csv
+import os
+from urllib.parse import urljoin
 
-import requests  # librairy to make HTTP requests and interact with web ressources
-from bs4 import (
-    BeautifulSoup,
-)  # Importing BeautifulSoup from the bs4 module for HTML parsing and manipulation
-import csv  # Import the csv module for reading and writing CSV files
-import os  # Import the os module for operating system-related functionalities
+# Target URL and base URL
+url = "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+base_url = "https://books.toscrape.com"
 
-url = "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"  # variable creation of website I want to scrape
+# Send a GET request to the URL
+response = requests.get(url)
 
-response = requests.get(url)  # variable requesting opening the website
-
-# condition to check if access to the website susscessful or not
+# Check if the request was successful
 if response.status_code == 200:
-    print(f"access to {url} successful")
+    print(f"Access to {url} successful")
 else:
-    print(f"access to {url} unsuccessful")
+    print(f"Access to {url} unsuccessful")
 
-# create a BeautifulSoup object by passing in the response content while specifying the parser to use
+# Parse the response content with BeautifulSoup
 soup = BeautifulSoup(response.content, "html.parser")
 
-# Find all the book containers
-book_containers = soup.find_all("article", class_="product_pod")
+# List to store book data
+book_data = []
 
-# ========================= TO ADD =========================
-# ==>> ajouter une loop qui rentre dans chaque page pour extraire les données
-# for into_page(range 21):
-# ===>> prendre en compte si "next" parcourir toute les pages, faire une def
-# def turn_the_page():
-# ========================= TO ADD =========================
+# Loop to scrape data from multiple pages
+while True:
+    # Find all book containers
+    book_containers = soup.find_all("article", class_="product_pod")
+    # ===============use tr/th to find the data =================================
+    # Iterate through each book container to extract data
+    for container in book_containers:
+        # Extract data using appropriate selectors
+        product_page_url = urljoin(base_url, container.h3.a["href"])
+        title = container.h3.a["title"]
+        price_incl_tax = container.find("p", class_="price_color").text
+        price_excl_tax = (
+            container.find("p", class_="price_color").find_next_sibling("p").text
+        )
+        availability = container.find("p", class_="instock availability").text.strip()
+        product_desc_elem = container.find("p", class_="excerpt")
+        product_desc = product_desc_elem.text if product_desc_elem else None
+        category = soup.find("h1").text
+        review_rating = container.find("p", class_="star-rating")["class"][1]
+        image_url = urljoin(base_url, container.img["src"])
+        upc_elem = container.find("th", string="UPC")
+        upc = upc_elem.find_next_sibling("td").text.strip() if upc_elem else None
+        # ===============use tr/th to find the data =================================
 
-book_data = []  # Initialize a list to store the extracted data
+        # Append the extracted data as a dictionary to the book_data list
+        book_data.append(
+            {
+                "Pdt url": product_page_url,
+                "UPC": upc,
+                "Title": title,
+                "Price incl VAT": price_incl_tax,
+                "Price excl VAT": price_excl_tax,
+                "Nb available": availability,
+                "Pdt description": product_desc,
+                "Category": category,
+                "Review Rating": review_rating,
+                "Img url": image_url,
+            }
+        )
 
-for container in book_containers:
-    product_page_url = container.h3.a
-    universal_product_code = soup.find("th", string="UPC")
-    title = soup.find("h1").string
-    price_including_tax = soup.find("th", string="Price (incl. tax)")
-    price_excluding_tax = soup.find("th", string="Price (excl. tax)")
-    number_available = soup.find("th", string="Availability")
-    product_description = soup.find("div", {"id": "product_description"})
-    category = soup.find("a", href="../category/books/poetry_23/index.html")
+    # Find the next page button
+    next_button = soup.find("li", class_="next")
+    if next_button is None:
+        break
 
-    review_rating = soup.find("p", class_="star-rating")["class"][1]
-    image_url = soup.find("img")
+    # Get the URL for the next page
+    next_page_url = urljoin(base_url, next_button.a["href"])
+    next_page_response = requests.get(next_page_url)
+    soup = BeautifulSoup(next_page_response.content, "html.parser")
 
-    # ========================= reminders soup.find =========================
-    # title = container.h3.a.text
-    # price = container.find("p", class_="price_color").text
-    # ========================= reminders soup.find =========================
-
-    book_data.append(
-        {
-            "Pdt url": product_page_url,
-            "UPC": universal_product_code,
-            "Title": title,
-            "Price incl VAT": price_including_tax,
-            "Price excl VAT": price_excluding_tax,
-            "Nb available": number_available,
-            "Pdt description": product_description,
-            "Category": category,
-            "Review Rating": review_rating,
-            "Img url": image_url,
-        }
-    )
-
-
-# Write the data to the CSV file
-# Define the column names for the CSV file
+# Define fieldnames for CSV header
 fieldnames = [
-    [
-        "product_page_url",
-        "universal_product_code",
-        "title",
-        "price_including_tax",
-        "price_excluding_tax",
-        "number_available",
-        "product_description",
-        "category",
-        "review_rating",
-        "image_url",
-    ],
-    [
-        product_page_url,
-        universal_product_code,
-        title,
-        price_including_tax,
-        price_excluding_tax,
-        number_available,
-        product_description,
-        category,
-        review_rating,
-        image_url,
-    ],
+    "Pdt url",
+    "UPC",
+    "Title",
+    "Price incl VAT",
+    "Price excl VAT",
+    "Nb available",
+    "Pdt description",
+    "Category",
+    "Review Rating",
+    "Img url",
 ]
 
-# Write the data to the CSV file
+# Specify the directory, filename, and file path for the CSV
 directory = r"C:\Users\johan\Desktop"
 filename = "book_data.csv"
 filepath = os.path.join(directory, filename)
 
-with open(filepath, "w", newline="") as csvfile:
-    writer = csv.writer(csvfile)
-    writer.writerows(fieldnames)
+# Write data to the CSV file
+with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(book_data)
 
-# Print success message
-print(r"Data has been successfully saved to C:\Users\johan\Desktop\book_data.csv")
+print(f"Data has been successfully saved to {filepath}")
