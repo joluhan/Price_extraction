@@ -2,8 +2,16 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import os
+
+
+# >>>>============= test =============
+
+# url joining librairies
 from urllib.parse import urljoin
 import posixpath
+
+# ============= test =============<<<<
+
 
 # Target URL and base URL
 url = "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
@@ -21,8 +29,8 @@ else:
 # Parse the response content with BeautifulSoup
 soup = BeautifulSoup(response.content, "html.parser")
 
-# ============= test =============
 
+# >>>>============= test =============
 
 path_2 = soup.find("ul", class_="nav nav-list")
 path_3 = soup.find("article", class_="product_pod", a="href")
@@ -34,8 +42,8 @@ result = urljoin(base_url, paths)
 
 print(result)
 
+# ============= test =============<<<<
 
-# ============= test =============
 
 # # List to store book data
 # book_data = []
