@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import csv
 import os
 from urllib.parse import urljoin
+import posixpath
 
 # Target URL and base URL
 url = "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
@@ -21,6 +22,17 @@ else:
 soup = BeautifulSoup(response.content, "html.parser")
 
 # ============= test =============
+
+
+path_2 = soup.find("ul", class_="nav nav-list")
+path_3 = soup.find("article", class_="product_pod", a="href")
+paths = posixpath.join(path_2, path_3)
+# book_url = urljoin(base_url, path_2, path_3)
+print(paths)
+
+result = urljoin(base_url, paths)
+
+print(result)
 
 
 # ============= test =============
