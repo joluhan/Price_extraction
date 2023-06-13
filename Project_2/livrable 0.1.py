@@ -1,13 +1,14 @@
 # ============================== Étape 1 : Extraire les données d’un seul produit ==============================
 
-
 import requests
 from bs4 import BeautifulSoup
 import csv
 import os
+from urllib.parse import urljoin
 
 # Specify the URL to scrape
 url = "http://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html"
+base_url = "https://books.toscrape.com"
 
 # Send a GET request to the URL
 response = requests.get(url)
@@ -18,11 +19,16 @@ if response.status_code == 200:
 else:
     print(f"Access to {url} unsuccessful")
 
+# Book URL
+book_url = "catalogue/a-light-in-the-attic_1000/index.html"
+# Join the URLs
+absolute_url = urljoin(base_url, book_url)
+
 # Create a BeautifulSoup object to parse the HTML content
 soup = BeautifulSoup(response.content, "html.parser")
 
 # Extract the desired information
-product_page_url = url
+product_page_url = absolute_url
 universal_product_code = soup.find("th", string="UPC").find_next_sibling("td").string
 title = soup.find("h1").string
 price_including_tax = (
@@ -38,8 +44,8 @@ product_description = (
 category = soup.find("a", href="../category/books/poetry_23/index.html").string
 
 review_rating = soup.find("p", class_="star-rating")["class"][1]
-image_url = soup.find("div", {"id": "product_gallery"}).find("img")["src"]
-# ===>> mettre l'url absolue (faire recheche absolute & relative path)
+image_url = urljoin(base_url, soup.img["src"])
+
 
 # Prepare the data to write to the CSV file
 data = [
