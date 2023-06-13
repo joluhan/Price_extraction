@@ -1,3 +1,13 @@
+# ============================== Étape 2 : Extraire les données d’une catégorie ==============================
+
+# process:
+# récupérer url de chaque livre
+# extaire données de chaque url
+# sauvegarder les données
+# https://www.crummy.com/software/BeautifulSoup/bs4/doc/#find
+# https://www.geeksforgeeks.org/how-to-get-the-next-page-on-beautifulsoup/
+
+
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -46,6 +56,7 @@ while True:
     # Iterate through each book container to extract data
     for container in book_containers:
         # Extract the desired information
+
         product_page_url = absolute_url
         universal_product_code = (
             soup.find("th", string="UPC").find_next_sibling("td").string
