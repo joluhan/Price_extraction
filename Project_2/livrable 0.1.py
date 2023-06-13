@@ -19,13 +19,14 @@ if response.status_code == 200:
 else:
     print(f"Access to {url} unsuccessful")
 
+
+# Create a BeautifulSoup object to parse the HTML content
+soup = BeautifulSoup(response.content, "html.parser")
+
 # Book URL
 book_url = "catalogue/a-light-in-the-attic_1000/index.html"
 # Join the URLs
 absolute_url = urljoin(base_url, book_url)
-
-# Create a BeautifulSoup object to parse the HTML content
-soup = BeautifulSoup(response.content, "html.parser")
 
 # Extract the desired information
 product_page_url = absolute_url
@@ -45,7 +46,6 @@ category = soup.find("a", href="../category/books/poetry_23/index.html").string
 
 review_rating = soup.find("p", class_="star-rating")["class"][1]
 image_url = urljoin(base_url, soup.img["src"])
-
 
 # Prepare the data to write to the CSV file
 data = [

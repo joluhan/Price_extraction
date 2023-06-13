@@ -3,15 +3,9 @@ from bs4 import BeautifulSoup
 import csv
 import os
 
-
-# >>>>============= test =============
-
 # url joining librairies
 from urllib.parse import urljoin
 import posixpath
-
-# ============= test =============<<<<
-
 
 # Target URL and base URL
 url = "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
@@ -31,7 +25,7 @@ soup = BeautifulSoup(response.content, "html.parser")
 
 
 # >>>>============= test =============
-
+# ============= test =============<<<<
 
 # Category URL
 category_url = "catalogue/category/books/travel_2/index.html"
@@ -40,10 +34,6 @@ book_url = "catalogue/a-light-in-the-attic_1000/index.html"
 # Join the URLs
 absolute_url = urljoin(base_url, book_url)
 
-
-# ============= test =============<<<<
-
-
 # List to store book data
 book_data = []
 
@@ -51,37 +41,46 @@ book_data = []
 while True:
     # Find all book containers
     book_containers = soup.find_all("article", class_="product_pod")
-    print(book_containers)
+
     # ===============use tr/th to find the data =================================
     # Iterate through each book container to extract data
     for container in book_containers:
-        # Extract data using appropriate selectors
-        product_page_url = urljoin(base_url, container.h3.a["href"])
-        title = container.h3.a["title"]
-        price_incl_tax = container.find("p", class_="price_color").text
-        price_excl_tax = (
-            container.find("p", class_="price_color").find_next_sibling("p").text
+        # Extract the desired information
+        product_page_url = absolute_url
+        universal_product_code = (
+            soup.find("th", string="UPC").find_next_sibling("td").string
         )
-        availability = container.find("p", class_="instock availability").text.strip()
-        product_desc_elem = container.find("p", class_="excerpt")
-        product_desc = product_desc_elem.text if product_desc_elem else None
-        category = soup.find("h1").text
-        review_rating = container.find("p", class_="star-rating")["class"][1]
-        image_url = urljoin(base_url, container.img["src"])
-        upc_elem = container.find("th", string="UPC")
-        upc = upc_elem.find_next_sibling("td").text.strip() if upc_elem else None
+        title = soup.find("h1").string
+        price_including_tax = (
+            soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
+        )
+        price_excluding_tax = (
+            soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
+        )
+        number_available = (
+            soup.find("th", string="Availability").find_next_sibling("td").string
+        )
+        product_description = (
+            soup.find("div", {"id": "product_description"})
+            .find_next("p")
+            .string.strip()
+        )
+        category = soup.find("a", href="../category/books/poetry_23/index.html").string
+
+        review_rating = soup.find("p", class_="star-rating")["class"][1]
+        image_url = urljoin(base_url, soup.img["src"])
         # ===============use tr/th to find the data =================================
 
         # Append the extracted data as a dictionary to the book_data list
         book_data.append(
             {
                 "Pdt url": product_page_url,
-                "UPC": upc,
+                "UPC": universal_product_code,
                 "Title": title,
-                "Price incl VAT": price_incl_tax,
-                "Price excl VAT": price_excl_tax,
-                "Nb available": availability,
-                "Pdt description": product_desc,
+                "Price incl VAT": price_including_tax,
+                "Price excl VAT": price_excluding_tax,
+                "Nb available": number_available,
+                "Pdt description": product_description,
                 "Category": category,
                 "Review Rating": review_rating,
                 "Img url": image_url,
