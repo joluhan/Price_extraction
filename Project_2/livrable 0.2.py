@@ -31,9 +31,6 @@ else:
 # Parse the response content with BeautifulSoup
 soup = BeautifulSoup(response.content, "html.parser")
 
-# List to store book data
-book_data = []
-print(book_data)
 # >>>>============= test =============
 
 # collect url of each book
@@ -43,25 +40,28 @@ book_data = []
 
 # Assuming `soup` refers to the BeautifulSoup object of the webpage content
 
-# Find all book articles on the webpage
-book_articles = soup.find("ol", class_="row").find("article", class_="product_pod")
 
-# Iterate over each book article and collect the URLs
-for book_article in book_articles:
-    # Find the anchor tag within the book article
-    anchor_tag = book_article.find("a")
-    if anchor_tag:
-        # Extract the relative URL
-        relative_url = anchor_tag.get("href")
-        # Construct the absolute URL using the base URL of the website
-        absolute_url = urljoin(base_url, relative_url)
-        # Append the absolute URL to the book_data list
-        book_data.append(absolute_url)
-        # Print the absolute URL (optional)
-        print(absolute_url)
-    else:
-        # Handle cases where the anchor tag is not found
-        print("Anchor tag not found for a book article")
+# Find all book articles on the webpage
+book_articles = soup.findAll("li", class_="col-xs-6 col-sm-4 col-md-3 col-lg-3")
+for article in book_articles:
+    book_url = article.find("a", href=True)["href"]
+    print("Found the URL:", book_url)
+
+# # Iterate over each book article and collect the URLs
+# for book_article in book_articles:
+#     # Find the anchor tag within the book article
+#     if anchor_tag:
+#         # Extract the relative URL
+#         relative_url = anchor_tag
+#         # Construct the absolute URL using the base URL of the website
+#         absolute_url = urljoin(base_url, relative_url)
+#         # Append the absolute URL to the book_data list
+#         book_data.append(absolute_url)
+#         # Print the absolute URL (optional)
+#         print(absolute_url)
+#     else:
+#         # Handle cases where the anchor tag is not found
+#         print("Anchor tag not found for a book article")
 
 # extaire données de chaque url
 
