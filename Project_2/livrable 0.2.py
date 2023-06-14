@@ -44,25 +44,22 @@ book_url = "catalogue/a-light-in-the-attic_1000/index.html"
 # Join the URLs
 absolute_url = urljoin(base_url, book_url)
 
+# List to store book data
+book_data = []
 
 # Loop to scrape data from multiple pages
 while True:
-    # Request the URL
+    # Request the URL of each page
     response = requests.get(absolute_url)
+
+    soup_url = BeautifulSoup(response, "html.parser")
     # Check if the request was successful
     if response.status_code == 200:
         print(f"Access to {absolute_url} successful")
         continue
-    else:
-        print(f"Access to {absolute_url} unsuccessful")
-        break
 
-# List to store book data
-book_data = []
-
-while True:
     # Find all book containers
-    response = soup.find_all("article", class_="product_pod")
+    container = soup_url.find_all("article", class_="product_pod")
 
     # ===============use tr/th to find the data =================================
     # Iterate through each book container to extract data
@@ -119,6 +116,7 @@ while True:
     next_page_url = urljoin(base_url, next_button.a["href"])
     next_page_response = requests.get(next_page_url)
     soup = BeautifulSoup(next_page_response.content, "html.parser")
+
 
 # Define fieldnames for CSV header
 fieldnames = [
