@@ -17,7 +17,7 @@ from urllib.parse import urljoin
 catalogue_url = (
     "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
 )
-base_url = "https://books.toscrape.com/"
+base_url = "https://books.toscrape.com/catalogue/"
 
 # Send a GET request to the URL
 response = requests.get(catalogue_url)
@@ -38,8 +38,6 @@ soup = BeautifulSoup(response.content, "html.parser")
 # Initialize an empty list to store the book URLs
 book_data = []
 
-# Assuming `soup` refers to the BeautifulSoup object of the webpage content
-
 
 # Find all book articles on the webpage
 def find_all_book_articles(soup):
@@ -53,7 +51,7 @@ def find_all_book_articles(soup):
         print(book_data)
 
 
-find_all_book_articles(soup)
+find_all_book_articles(soup, book_data)
 # # Iterate over each book article and collect the URLs
 # for book_article in book_data:
 #     # Find the anchor tag within the book article
