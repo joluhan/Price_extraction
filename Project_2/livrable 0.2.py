@@ -44,17 +44,29 @@ book_url = "catalogue/a-light-in-the-attic_1000/index.html"
 # Join the URLs
 absolute_url = urljoin(base_url, book_url)
 
-# List to store book data
-book_data = []
 
 # Loop to scrape data from multiple pages
 while True:
+    # Request the URL
+    response = requests.get(absolute_url)
+    # Check if the request was successful
+    if response.status_code == 200:
+        print(f"Access to {absolute_url} successful")
+        continue
+    else:
+        print(f"Access to {absolute_url} unsuccessful")
+        break
+
+# List to store book data
+book_data = []
+
+while True:
     # Find all book containers
-    book_containers = soup.find_all("article", class_="product_pod")
+    response = soup.find_all("article", class_="product_pod")
 
     # ===============use tr/th to find the data =================================
     # Iterate through each book container to extract data
-    for container in book_containers:
+    for container in response:
         # Extract the desired information
 
         product_page_url = absolute_url

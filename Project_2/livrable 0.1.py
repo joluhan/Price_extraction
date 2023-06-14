@@ -29,6 +29,7 @@ book_url = "catalogue/a-light-in-the-attic_1000/index.html"
 absolute_url = urljoin(base_url, book_url)
 
 # Extract the desired information
+
 product_page_url = absolute_url
 universal_product_code = soup.find("th", string="UPC").find_next_sibling("td").string
 title = soup.find("h1").string
