@@ -17,7 +17,7 @@ from urllib.parse import urljoin
 catalogue_url = (
     "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
 )
-base_url = "https://books.toscrape.com"
+base_url = "https://books.toscrape.com/"
 
 # Send a GET request to the URL
 response = requests.get(catalogue_url)
@@ -42,13 +42,20 @@ book_data = []
 
 
 # Find all book articles on the webpage
-book_articles = soup.findAll("li", class_="col-xs-6 col-sm-4 col-md-3 col-lg-3")
-for article in book_articles:
-    book_url = article.find("a", href=True)["href"]
-    print("Found the URL:", book_url)
+def find_all_book_articles(soup):
+    book_articles = soup.findAll("li", class_="col-xs-6 col-sm-4 col-md-3 col-lg-3")
+    for article in book_articles:
+        book_url = article.find("a", href=True)["href"]
+        # join url with the base URL of the website
+        book_url = urljoin(base_url, book_url)
+        book_data.append(book_url)
 
+        print(book_data)
+
+
+find_all_book_articles(soup)
 # # Iterate over each book article and collect the URLs
-# for book_article in book_articles:
+# for book_article in book_data:
 #     # Find the anchor tag within the book article
 #     if anchor_tag:
 #         # Extract the relative URL
