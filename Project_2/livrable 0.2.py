@@ -146,9 +146,6 @@ def save_data_to_csv(book_data, directory, filename):
     print(f"Data has been successfully saved to {filepath}")
 
 
-# >>>>==========================WORKING============================
-
-
 # Define the directory where the file will be saved
 directory = r"C:\Users\johan\Desktop"
 
@@ -158,7 +155,8 @@ filename = "book_data.csv"
 # Call the function to save the book_data to a CSV file in the specified directory
 save_data_to_csv(book_data, directory, filename)
 
+# >>>>==========================WORKING============================
+
 
 # >>>>==========================TEST============================
-
 # ==========================TEST============================<<<<<
