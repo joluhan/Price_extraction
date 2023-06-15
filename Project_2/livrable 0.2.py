@@ -31,8 +31,9 @@ soup = BeautifulSoup(response.content, "html.parser")
 # >>>>==========================WORKING============================
 # Function ==========> urls extraction
 def extract_urls(catalogue_url):
-    # Fetch the page content
+    # Send a GET request to the specified URL
     response = requests.get(catalogue_url)
+    # Retrieve the content of the response
     html_content = response.content
 
     # Parse the HTML
@@ -41,28 +42,35 @@ def extract_urls(catalogue_url):
     # Find and extract every URL
     base_url = response.url  # Get the base URL of the page
     urls = []
+
+    # Find all article elements with the specified class
     articles = soup.find_all("article", class_="product_pod")
     for article in articles:
+        # Find the href attribute of the nested <a> element
         href = article.find("h3").find("a")["href"]
         absolute_url = urljoin(base_url, href)  # Convert relative URL to absolute URL
-        urls.append(absolute_url)
+        urls.append(absolute_url)  # Add the absolute URL to the list of URLs
 
-    return urls
+    return urls  # Return the list of extracted URLs
 
 
+# Call the extract_urls function and store the result in the 'result' variable
 result = extract_urls(catalogue_url)
 # print(result)
 
 
-# Function ==========> data extraction
+# Function ==========> extract data from a list of URLs
 def extract_data(result):
-    book_data = []
+    book_data = []  # Initialize an empty list to store book data
 
-    for url in result:
-        response = requests.get(url)
-        html_content = response.content
+    for url in result:  # Iterate over each URL in the input list
+        response = requests.get(url)  # Send a GET request to the URL
+        html_content = response.content  # Get the content of the response
+
+        # Create a BeautifulSoup object for parsing HTML
         soup = BeautifulSoup(html_content, "html.parser")
 
+        # Extract various data from the HTML using BeautifulSoup's find and find_all methods
         product_page_url = url
         universal_product_code = (
             soup.find("table", class_="table-striped").find("td").text
@@ -84,6 +92,7 @@ def extract_data(result):
             url, soup.find("div", class_="item active").find("img")["src"]
         )
 
+        # Create a dictionary with the extracted data and append it to the book_data list
         book_data.append(
             {
                 "Pdt url": product_page_url,
@@ -99,15 +108,16 @@ def extract_data(result):
             }
         )
 
-    return book_data
+    return book_data  # Return the list of extracted book data
 
 
 # Pass the result of extract_urls() to extract_data()
 book_data = extract_data(result)
 
 
-# Function ==========> save data to csv file
+# Function ==========> save data to a CSV file
 def save_data_to_csv(book_data, directory, filename):
+    # Define the field names for the CSV file
     fieldnames = [
         "Pdt url",
         "UPC",
@@ -120,25 +130,35 @@ def save_data_to_csv(book_data, directory, filename):
         "Review Rating",
         "Img url",
     ]
+    # Create the file path by joining the directory and filename
     filepath = os.path.join(directory, filename)
 
+    # Open the CSV file in write mode with UTF-8 encoding
     with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
+        # Create a CSV writer object using the field names
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        # Write the header row with the field names
         writer.writeheader()
+        # Write the data rows to the CSV file
         writer.writerows(book_data)
 
+    # Print a success message with the file path
     print(f"Data has been successfully saved to {filepath}")
 
 
 # >>>>==========================WORKING============================
 
 
+# Define the directory where the file will be saved
+directory = r"C:\Users\johan\Desktop"
+
+# Specify the filename for the CSV file
+filename = "book_data.csv"
+
+# Call the function to save the book_data to a CSV file in the specified directory
+save_data_to_csv(book_data, directory, filename)
+
+
 # >>>>==========================TEST============================
 
 # ==========================TEST============================<<<<<
-
-
-# Example usage
-directory = r"C:\Users\johan\Desktop"
-filename = "book_data.csv"
-save_data_to_csv(book_data, directory, filename)
