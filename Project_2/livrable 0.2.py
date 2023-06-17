@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import os
+import re
 
 # url joining libraries
 from urllib.parse import urljoin
@@ -76,43 +77,30 @@ def extract_data(result):
             soup.find("table", class_="table-striped").find("td").text
         )
         title = soup.find("div", class_="product_main").find("h1").text
-        # price_including_tax = soup.find("p", class_="price_color").text.strip("£")
-        # price_excluding_tax = soup.find_all("p", class_="price_color")[1].text.strip(
-        #     "£"
-        # )
-        # >>>>>>==========================TEST============================
+
         price_including_tax = (
             soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
         ).text.strip("£")
         price_excluding_tax = (
             soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
         ).text.strip("£")
-        # ==========================TEST============================<<<<<<<
-        # number_available = soup.find("p", class_="instock availability").text.strip()
 
-        # >>>>>>==========================TEST============================
         # Extract availability text
         availability_text = soup.find("p", class_="instock availability").text.strip()
+        # Extract the number from the availability text using regular expressions and string manipulation
+        match = re.search(
+            r"\d+", availability_text
+        )  # Search for any sequence of digits
+        if match:
+            number_available = match.group()  # Extract the matched digits
+        else:
+            number_available = None  # Set to None if no match is found
 
-        # Split the availability text and extract the number
-        number_available = availability_text.split()[
-            1
-        ]  # Assuming the number is always the second word
-
-        # ==========================TEST============================<<<<<<<
-
-        # product_description = (
-        #     soup.find("article", class_="product_page")
-        #     .find("p", recursive=False)
-        #     .text.strip()
-        # )
-        # >>>>>>==========================TEST============================
         product_description = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
             .string.strip()
         )
-        # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
@@ -184,3 +172,6 @@ filename = "book_data.csv"
 save_data_to_csv(book_data, directory, filename)
 
 # >>>>==========================WORKING============================
+
+# >>>>>>==========================TEST============================
+# ==========================TEST============================<<<<<<<
