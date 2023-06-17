@@ -4,35 +4,38 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import os
+import re
+
+# import html
 
 # url joining libraries
 from urllib.parse import urljoin
 
-# Target base URL
+# Target URL and base URL
+catalogue_url = (
+    "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
+)
 base_url = "https://books.toscrape.com/"
 
 # Send a GET request to the URL
-response = requests.get(base_url)
+response = requests.get(catalogue_url)
 
 # Check if the request was successful
 if response.status_code == 200:
-    print(f"Access to {base_url} successful")
+    print(f"Access to {catalogue_url} successful")
 else:
-    print(f"Access to {base_url} unsuccessful")
+    print(f"Access to {catalogue_url} unsuccessful")
 
 # Parse the response content with BeautifulSoup
 soup = BeautifulSoup(response.content, "html.parser")
 # print(soup.prettify())
 
-# >>>>==========================TEST============================
-# ==========================TEST============================<<<<<
 
-
-# # >>>>==========================WORKING============================
+# >>>>==========================WORKING============================
 # Function ==========> urls extraction
-def extract_urls(base_url):
+def extract_urls(catalogue_url):
     # Send a GET request to the specified URL
-    response = requests.get(base_url)
+    response = requests.get(catalogue_url)
     # Retrieve the content of the response
     html_content = response.content
 
@@ -55,7 +58,8 @@ def extract_urls(base_url):
 
 
 # Call the extract_urls function and store the result in the 'result' variable
-result = extract_urls(base_url)
+result = extract_urls(catalogue_url)
+# print(result)
 
 
 # Function ==========> extract data from a list of URLs
@@ -69,22 +73,45 @@ def extract_data(result):
         # Create a BeautifulSoup object for parsing HTML
         soup = BeautifulSoup(html_content, "html.parser")
 
-        # Extract various data from the HTML using BeautifulSoup's find and find_all methods
+        # Extract various data from the HTML using BeautifulSoup .find
         product_page_url = url
         universal_product_code = (
             soup.find("table", class_="table-striped").find("td").text
         )
         title = soup.find("div", class_="product_main").find("h1").text
-        price_including_tax = soup.find("p", class_="price_color").text.strip("£")
-        price_excluding_tax = soup.find_all("p", class_="price_color")[1].text.strip(
-            "£"
-        )
-        number_available = soup.find("p", class_="instock availability").text.strip()
+
+        price_including_tax = (
+            soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
+        ).text.strip("£")
+        price_excluding_tax = (
+            soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
+        ).text.strip("£")
+
+        # Extract availability text
+        availability_text = soup.find("p", class_="instock availability").text.strip()
+        # Extract the number from the availability text using regular expressions and string manipulation
+        match = re.search(
+            r"\d+", availability_text
+        )  # Search for any sequence of digits
+        if match:
+            number_available = match.group()  # Extract the matched digits
+        else:
+            number_available = None  # Set to None if no match is found
+
         product_description = (
-            soup.find("article", class_="product_page")
-            .find("p", recursive=False)
-            .text.strip()
+            soup.find("div", {"id": "product_description"})
+            .find_next("p")
+            .string.strip()
         )
+        # >>>>>>==========================TEST============================
+        # product_description_element = soup.find(
+        #     "div", {"id": "product_description"}
+        # ).find_next("p")
+        # product_description = html.unescape(
+        #     product_description_element.get_text(strip=True)
+        # )
+        # ==========================TEST============================<<<<<<<
+
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
         image_url = urljoin(
