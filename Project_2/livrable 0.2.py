@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import csv
 import os
 import re
+import html
 
 # url joining libraries
 from urllib.parse import urljoin
@@ -96,18 +97,18 @@ def extract_data(result):
         else:
             number_available = None  # Set to None if no match is found
 
-        # product_description = (
-        #     soup.find("div", {"id": "product_description"})
-        #     .find_next("p")
-        #     .string.strip()
-        # )
-        # >>>>>>==========================TEST============================
         product_description = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
-            .get_text(strip=True)
+            .string.strip()
         )
-
+        # >>>>>>==========================TEST============================
+        # product_description_element = soup.find(
+        #     "div", {"id": "product_description"}
+        # ).find_next("p")
+        # product_description = html.unescape(
+        #     product_description_element.get_text(strip=True)
+        # )
         # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
