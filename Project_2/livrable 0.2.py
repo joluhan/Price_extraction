@@ -80,27 +80,27 @@ def extract_data(result):
         # price_excluding_tax = soup.find_all("p", class_="price_color")[1].text.strip(
         #     "£"
         # )
-        # >>>>==========================TEST============================
+        # >>>>>>==========================TEST============================
         price_including_tax = (
             soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
         ).text.strip("£")
         price_excluding_tax = (
             soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
         ).text.strip("£")
-        # ==========================TEST============================<<<<<
+        # ==========================TEST============================<<<<<<<
         number_available = soup.find("p", class_="instock availability").text.strip()
         # product_description = (
         #     soup.find("article", class_="product_page")
         #     .find("p", recursive=False)
         #     .text.strip()
         # )
-        # >>>>==========================TEST============================
+        # >>>>>>==========================TEST============================
         product_description = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
             .string.strip()
         )
-        # ==========================TEST============================<<<<<
+        # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
