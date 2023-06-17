@@ -71,7 +71,7 @@ def extract_data(result):
         # Create a BeautifulSoup object for parsing HTML
         soup = BeautifulSoup(html_content, "html.parser")
 
-        # Extract various data from the HTML using BeautifulSoup's find and find_all methods
+        # Extract various data from the HTML using BeautifulSoup .find
         product_page_url = url
         universal_product_code = (
             soup.find("table", class_="table-striped").find("td").text
@@ -96,11 +96,19 @@ def extract_data(result):
         else:
             number_available = None  # Set to None if no match is found
 
+        # product_description = (
+        #     soup.find("div", {"id": "product_description"})
+        #     .find_next("p")
+        #     .string.strip()
+        # )
+        # >>>>>>==========================TEST============================
         product_description = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
-            .string.strip()
+            .get_text(strip=True)
         )
+
+        # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
@@ -172,6 +180,3 @@ filename = "book_data.csv"
 save_data_to_csv(book_data, directory, filename)
 
 # >>>>==========================WORKING============================
-
-# >>>>>>==========================TEST============================
-# ==========================TEST============================<<<<<<<
