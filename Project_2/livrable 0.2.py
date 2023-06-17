@@ -82,7 +82,9 @@ def extract_data(result):
         # )
         # >>>>==========================TEST============================
         price_including_tax = soup.find("tbody").find("tr").find("td").text.strip("£")
-        price_excluding_tax= soup.find("tbody").find("tr", "Price (incl. tax)").find_next
+        price_excluding_tax = (
+            soup.find("tbody").find("tr", "Price (incl. tax)").find_next
+        )
 
         # ==========================TEST============================<<<<<
         number_available = soup.find("p", class_="instock availability").text.strip()
