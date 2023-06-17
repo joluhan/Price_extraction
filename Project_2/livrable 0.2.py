@@ -88,7 +88,19 @@ def extract_data(result):
             soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
         ).text.strip("£")
         # ==========================TEST============================<<<<<<<
-        number_available = soup.find("p", class_="instock availability").text.strip()
+        # number_available = soup.find("p", class_="instock availability").text.strip()
+
+        # >>>>>>==========================TEST============================
+        # Extract availability text
+        availability_text = soup.find("p", class_="instock availability").text.strip()
+
+        # Split the availability text and extract the number
+        number_available = availability_text.split()[
+            1
+        ]  # Assuming the number is always the second word
+
+        # ==========================TEST============================<<<<<<<
+
         # product_description = (
         #     soup.find("article", class_="product_page")
         #     .find("p", recursive=False)
