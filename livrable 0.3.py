@@ -24,8 +24,11 @@ else:
 soup = BeautifulSoup(response.content, "html.parser")
 # print(soup.prettify())
 
+# >>>>==========================TEST============================
+# ==========================TEST============================<<<<<
 
-# >>>>==========================WORKING============================
+
+# # >>>>==========================WORKING============================
 # Function ==========> urls extraction
 def extract_urls(base_url):
     # Send a GET request to the specified URL
@@ -53,7 +56,6 @@ def extract_urls(base_url):
 
 # Call the extract_urls function and store the result in the 'result' variable
 result = extract_urls(base_url)
-# print(result)
 
 
 # Function ==========> extract data from a list of URLs
@@ -153,7 +155,3 @@ filename = "book_data.csv"
 save_data_to_csv(book_data, directory, filename)
 
 # >>>>==========================WORKING============================
-
-
-# >>>>==========================TEST============================
-# ==========================TEST============================<<<<<
