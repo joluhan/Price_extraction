@@ -76,10 +76,15 @@ def extract_data(result):
             soup.find("table", class_="table-striped").find("td").text
         )
         title = soup.find("div", class_="product_main").find("h1").text
-        price_including_tax = soup.find("p", class_="price_color").text.strip("£")
-        price_excluding_tax = soup.find_all("p", class_="price_color")[1].text.strip(
-            "£"
-        )
+        # price_including_tax = soup.find("p", class_="price_color").text.strip("£")
+        # price_excluding_tax = soup.find_all("p", class_="price_color")[1].text.strip(
+        #     "£"
+        # )
+        # >>>>==========================TEST============================
+        price_including_tax = soup.find("tbody").find("tr").find("td").text.strip("£")
+        price_excluding_tax= soup.find("tbody").find("tr", "Price (incl. tax)").find_next
+
+        # ==========================TEST============================<<<<<
         number_available = soup.find("p", class_="instock availability").text.strip()
         product_description = (
             soup.find("article", class_="product_page")
@@ -156,7 +161,3 @@ filename = "book_data.csv"
 save_data_to_csv(book_data, directory, filename)
 
 # >>>>==========================WORKING============================
-
-
-# >>>>==========================TEST============================
-# ==========================TEST============================<<<<<
