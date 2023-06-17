@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup
 import csv
 import os
 import re
-import html
+
+# import html
 
 # url joining libraries
 from urllib.parse import urljoin
