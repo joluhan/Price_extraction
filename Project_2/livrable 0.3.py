@@ -6,6 +6,10 @@ import csv
 import os
 import re
 
+# import unidecode librairy
+from unicodedata import normalize
+
+
 # import html
 
 # url joining libraries
@@ -31,7 +35,6 @@ soup = BeautifulSoup(response.content, "html.parser")
 # print(soup.prettify())
 
 
-# >>>>==========================WORKING============================
 # Function ==========> urls extraction
 def extract_urls(catalogue_url):
     # Send a GET request to the specified URL
@@ -98,18 +101,20 @@ def extract_data(result):
         else:
             number_available = None  # Set to None if no match is found
 
-        product_description = (
+        # extract product description
+        extracted_text = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
             .string.strip()
         )
+        # normalize product description by encoding/decoding the extracted data
+        product_description = (
+            normalize("NFKD", extracted_text)
+            .encode("ascii", "ignore")
+            .decode("utf-8")
+            .strip()
+        )
         # >>>>>>==========================TEST============================
-        # product_description_element = soup.find(
-        #     "div", {"id": "product_description"}
-        # ).find_next("p")
-        # product_description = html.unescape(
-        #     product_description_element.get_text(strip=True)
-        # )
         # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
@@ -180,5 +185,3 @@ filename = "book_data.csv"
 
 # Call the function to save the book_data to a CSV file in the specified directory
 save_data_to_csv(book_data, directory, filename)
-
-# >>>>==========================WORKING============================
