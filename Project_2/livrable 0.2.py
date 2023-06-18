@@ -56,21 +56,7 @@ def extract_urls(catalogue_url):
         urls.append(absolute_url)  # Add the absolute URL to the list of URLs
 
         # # >>>>>>==========================TEST============================
-        # # Find the next page link
-        # next_link = soup.find("li", class_="next")
-        # if next_link:
-        #     # Extract the URL of the next page
-        #     next_page_url = urljoin(base_url, next_link.find("a")["href"])
-        #     catalogue_url = next_page_url  # Update the catalogue URL to the next page
-        # else:
-        #     break  # Exit the loop if there is no next page
 
-        # Check if there is a next page
-        next_page_link = soup.find("li", class_="next").find("a")
-        if next_page_link:
-            catalogue_url = urljoin(base_url, next_page_link["href"])
-        else:
-            break  # No next page found, exit the loop
         # # ==========================TEST============================<<<<<<<
 
     return urls  # Return the list of extracted URLs
