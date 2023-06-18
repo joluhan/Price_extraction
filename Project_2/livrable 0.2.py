@@ -5,7 +5,10 @@ from bs4 import BeautifulSoup
 import csv
 import os
 import re
-from unidecode import unidecode
+
+# import unidecode librairy
+from unicodedata import normalize
+
 
 # import html
 
@@ -98,17 +101,20 @@ def extract_data(result):
         else:
             number_available = None  # Set to None if no match is found
 
-        # >>>>>> code to amend - change of name variable (extracted_text instead of product_description) - code works <<<<<<<
         # extract product description
         extracted_text = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
             .string.strip()
         )
-
+        # normalize product description by encoding/decoding the extracted data
+        product_description = (
+            normalize("NFKD", extracted_text)
+            .encode("ascii", "ignore")
+            .decode("utf-8")
+            .strip()
+        )
         # >>>>>>==========================TEST============================
-        # normalize product description
-        product_description = unidecode(product_description).strip()
         # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
