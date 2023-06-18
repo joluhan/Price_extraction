@@ -56,6 +56,12 @@ def extract_urls(catalogue_url):
         urls.append(absolute_url)  # Add the absolute URL to the list of URLs
 
         # # >>>>>>==========================TEST============================
+        # loop to find next page
+        next_page = soup.find("li", class_="next")
+        if next_page is not None:
+            next_page = next_page.find("a")["href"]
+            absolute_url = urljoin(base_url, next_page)
+            urls.append(absolute_url)
 
         # # ==========================TEST============================<<<<<<<
 

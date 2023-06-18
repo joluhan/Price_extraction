@@ -9,14 +9,11 @@ import re
 # import unidecode librairy
 from unicodedata import normalize
 
-
 # url joining libraries
 from urllib.parse import urljoin
 
 # Target URL and base URL
-catalogue_url = (
-    "https://books.toscrape.com/catalogue/category/books/travel_2/index.html"
-)
+catalogue_url = "https://books.toscrape.com/"
 base_url = "https://books.toscrape.com/"
 
 # Send a GET request to the URL
@@ -37,6 +34,7 @@ soup = BeautifulSoup(response.content, "html.parser")
 def extract_urls(catalogue_url):
     # Send a GET request to the specified URL
     response = requests.get(catalogue_url)
+
     # Retrieve the content of the response
     html_content = response.content
 
@@ -55,6 +53,16 @@ def extract_urls(catalogue_url):
         absolute_url = urljoin(base_url, href)  # Convert relative URL to absolute URL
         urls.append(absolute_url)  # Add the absolute URL to the list of URLs
 
+        # # >>>>>>==========================TEST============================
+        # loop to find next page
+        next_page = soup.find("li", class_="next")
+        if next_page is not None:
+            next_page = next_page.find("a")["href"]
+            absolute_url = urljoin(base_url, next_page)
+            urls.append(absolute_url)
+
+        # # ==========================TEST============================<<<<<<<
+
     return urls  # Return the list of extracted URLs
 
 
@@ -69,6 +77,7 @@ def extract_data(result):
 
     for url in result:  # Iterate over each URL in the input list
         response = requests.get(url)  # Send a GET request to the URL
+
         html_content = response.content  # Get the content of the response
 
         # Create a BeautifulSoup object for parsing HTML
@@ -112,8 +121,6 @@ def extract_data(result):
             .decode("utf-8")
             .strip()
         )
-        # >>>>>>==========================TEST============================
-        # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
