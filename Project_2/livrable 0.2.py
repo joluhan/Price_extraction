@@ -104,12 +104,7 @@ def extract_data(result):
             .string.strip()
         )
         # >>>>>>==========================TEST============================
-        # product_description_element = soup.find(
-        #     "div", {"id": "product_description"}
-        # ).find_next("p")
-        # product_description = html.unescape(
-        #     product_description_element.get_text(strip=True)
-        # )
+
         # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
