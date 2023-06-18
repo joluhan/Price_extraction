@@ -10,8 +10,6 @@ import re
 from unicodedata import normalize
 
 
-# import html
-
 # url joining libraries
 from urllib.parse import urljoin
 

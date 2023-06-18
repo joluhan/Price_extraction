@@ -9,9 +9,6 @@ import re
 # import unidecode librairy
 from unicodedata import normalize
 
-
-# import html
-
 # url joining libraries
 from urllib.parse import urljoin
 
@@ -39,6 +36,7 @@ soup = BeautifulSoup(response.content, "html.parser")
 def extract_urls(catalogue_url):
     # Send a GET request to the specified URL
     response = requests.get(catalogue_url)
+
     # Retrieve the content of the response
     html_content = response.content
 
@@ -57,6 +55,24 @@ def extract_urls(catalogue_url):
         absolute_url = urljoin(base_url, href)  # Convert relative URL to absolute URL
         urls.append(absolute_url)  # Add the absolute URL to the list of URLs
 
+        # # >>>>>>==========================TEST============================
+        # # Find the next page link
+        # next_link = soup.find("li", class_="next")
+        # if next_link:
+        #     # Extract the URL of the next page
+        #     next_page_url = urljoin(base_url, next_link.find("a")["href"])
+        #     catalogue_url = next_page_url  # Update the catalogue URL to the next page
+        # else:
+        #     break  # Exit the loop if there is no next page
+
+        # Check if there is a next page
+        next_page_link = soup.find("li", class_="next").find("a")
+        if next_page_link:
+            catalogue_url = urljoin(base_url, next_page_link["href"])
+        else:
+            break  # No next page found, exit the loop
+        # # ==========================TEST============================<<<<<<<
+
     return urls  # Return the list of extracted URLs
 
 
@@ -71,6 +87,7 @@ def extract_data(result):
 
     for url in result:  # Iterate over each URL in the input list
         response = requests.get(url)  # Send a GET request to the URL
+
         html_content = response.content  # Get the content of the response
 
         # Create a BeautifulSoup object for parsing HTML
@@ -114,8 +131,6 @@ def extract_data(result):
             .decode("utf-8")
             .strip()
         )
-        # >>>>>>==========================TEST============================
-        # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
