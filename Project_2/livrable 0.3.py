@@ -146,7 +146,7 @@ def extract_data(result):
             .decode("utf-8")
             .strip()
         )
-        # ==========================TEST============================<<<<<<<
+        # >>>>>>>>==========================TEST============================
         # Extract product description with error handling
         product_description_element = soup.find("div", {"id": "product_description"})
         extracted_text = (
