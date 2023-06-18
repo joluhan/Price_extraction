@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import csv
 import os
 import re
+from unidecode import unidecode
 
 # import html
 
@@ -98,27 +99,16 @@ def extract_data(result):
             number_available = None  # Set to None if no match is found
 
         # >>>>>> code to amend - change of name variable (extracted_text instead of product_description) - code works <<<<<<<
-        product_description = (
+        # extract product description
+        extracted_text = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
             .string.strip()
-            # >>>>>>==========================TEST============================
-            .encode("utf-8")
-            .decode("utf-8")
-            # ==========================TEST============================<<<<<<<
         )
+
         # >>>>>>==========================TEST============================
-        # possible_encodings = ["utf-8", "Windows-1252", "ISO-8859-1"]
-
-        # # decode product_description to utf-8
-        # for encoding in possible_encodings:
-        #     try:
-        #         decoded_text = extracted_text.encode(encoding).decode("utf-8")
-        #         break
-        #     except UnicodeEncodeError:
-        #         continue
-
-        # product_description = decoded_text
+        # normalize product description
+        product_description = unidecode(product_description).strip()
         # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
