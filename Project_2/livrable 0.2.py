@@ -31,7 +31,6 @@ soup = BeautifulSoup(response.content, "html.parser")
 # print(soup.prettify())
 
 
-# >>>>==========================WORKING============================
 # Function ==========> urls extraction
 def extract_urls(catalogue_url):
     # Send a GET request to the specified URL
@@ -98,13 +97,25 @@ def extract_data(result):
         else:
             number_available = None  # Set to None if no match is found
 
-        product_description = (
+        # >>>>>> code to amend - change of name variable (extracted_text instead of product_description) - code works <<<<<<<
+        extracted_text = (
             soup.find("div", {"id": "product_description"})
             .find_next("p")
             .string.strip()
         )
         # >>>>>>==========================TEST============================
+        # Try decoding the text using different encodings
+        possible_encodings = ["utf-8", "Windows-1252", "ISO-8859-1"]
 
+        # decode product_description to utf-8
+        for encoding in possible_encodings:
+            try:
+                decoded_text = extracted_text.encode(encoding).decode("utf-8")
+                break
+            except UnicodeEncodeError:
+                continue
+
+        product_description = decoded_text
         # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
@@ -175,5 +186,3 @@ filename = "book_data.csv"
 
 # Call the function to save the book_data to a CSV file in the specified directory
 save_data_to_csv(book_data, directory, filename)
-
-# >>>>==========================WORKING============================
