@@ -63,10 +63,9 @@ url_home = "https://books.toscrape.com/catalogue/page-1.html"
 # Call the extract_urls function and store the result in the 'result' variable
 result = extract_urls(url_home)
 
-# Print result with a new line for each URL
+url_list = []
+# store results in a list
 for url in result:
-    # store results in a list
-    url_list = []
     url_list.append(url)
     # print(url_list)
 
