@@ -72,10 +72,10 @@ for url in result:
 
 
 # Function ==========> extract data from a list of URLs
-def extract_data(url_list):
+def extract_data(result):
     book_data = []  # Initialize an empty list to store book data
 
-    for url in url_list:  # Iterate over each URL in the input list
+    for url in result:  # Iterate over each URL in the input list
         response = requests.get(url)  # Send a GET request to the URL
 
         html_content = response.content  # Get the content of the response
