@@ -78,7 +78,7 @@ data = [
 
 # Write the data to the CSV file
 directory = r"C:\Users\johan\Desktop"
-filename = "book_data.csv"
+filename = "book_data01.csv"
 filepath = os.path.join(directory, filename)
 
 with open(filepath, "w", newline="") as csvfile:
