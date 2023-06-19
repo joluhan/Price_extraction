@@ -68,7 +68,7 @@ for url in result:
     # store results in a list
     url_list = []
     url_list.append(url)
-    print(url_list)
+    # print(url_list)
 
 
 # Function ==========> extract data from a list of URLs
@@ -154,44 +154,44 @@ def extract_data(url_list):
 
 # Pass the result of extract_urls() to extract_data()
 book_data = extract_data(url_list)
+print(book_data)
+
+# # Function ==========> save data to a CSV file
+# def save_data_to_csv(book_data, directory, filename):
+#     # Define the field names for the CSV file
+#     fieldnames = [
+#         "Pdt url",
+#         "UPC",
+#         "Title",
+#         "Price incl VAT",
+#         "Price excl VAT",
+#         "Nb available",
+#         "Pdt description",
+#         "Category",
+#         "Review Rating",
+#         "Img url",
+#     ]
+#     # Create the file path by joining the directory and filename
+#     filepath = os.path.join(directory, filename)
+
+#     # Open the CSV file in write mode with UTF-8 encoding
+#     with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
+#         # Create a CSV writer object using the field names
+#         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+#         # Write the header row with the field names
+#         writer.writeheader()
+#         # Write the data rows to the CSV file
+#         writer.writerows(book_data)
+
+#     # Print a success message with the file path
+#     print(f"Data has been successfully saved to {filepath}")
 
 
-# Function ==========> save data to a CSV file
-def save_data_to_csv(book_data, directory, filename):
-    # Define the field names for the CSV file
-    fieldnames = [
-        "Pdt url",
-        "UPC",
-        "Title",
-        "Price incl VAT",
-        "Price excl VAT",
-        "Nb available",
-        "Pdt description",
-        "Category",
-        "Review Rating",
-        "Img url",
-    ]
-    # Create the file path by joining the directory and filename
-    filepath = os.path.join(directory, filename)
+# # Define the directory where the file will be saved
+# directory = r"C:\Users\johan\Desktop"
 
-    # Open the CSV file in write mode with UTF-8 encoding
-    with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
-        # Create a CSV writer object using the field names
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        # Write the header row with the field names
-        writer.writeheader()
-        # Write the data rows to the CSV file
-        writer.writerows(book_data)
+# # Specify the filename for the CSV file
+# filename = "book_data.csv"
 
-    # Print a success message with the file path
-    print(f"Data has been successfully saved to {filepath}")
-
-
-# Define the directory where the file will be saved
-directory = r"C:\Users\johan\Desktop"
-
-# Specify the filename for the CSV file
-filename = "book_data.csv"
-
-# Call the function to save the book_data to a CSV file in the specified directory
-save_data_to_csv(book_data, directory, filename)
+# # Call the function to save the book_data to a CSV file in the specified directory
+# save_data_to_csv(book_data, directory, filename)
