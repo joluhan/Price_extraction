@@ -12,64 +12,65 @@ from unicodedata import normalize
 # url joining libraries
 from urllib.parse import urljoin
 
-# Target URL and base URL
-url_home = "https://books.toscrape.com/"
-
-# Send a GET request to the URL
-response = requests.get(url_home)
-
-# Check if the request was successful
-if response.status_code == 200:
-    print(f"Access to {url_home} successful")
-else:
-    print(f"Access to {url_home} unsuccessful")
-
-# Parse the response content with BeautifulSoup
-soup = BeautifulSoup(response.content, "html.parser")
-# print(soup.prettify())
-
 
 # Function ==========> urls extraction
 def extract_urls(url_home):
-    # Send a GET request to the specified URL
-    response = requests.get(url_home)
-
-    # Retrieve the content of the response
-    html_content = response.content
-
-    # Parse the HTML
-    soup = BeautifulSoup(html_content, "html.parser")
-
-    # Find and extract every URL
-    url_home = response.url  # Get the base URL of the page
     urls = []
+    while True:
+        # Send a GET request to the specified URL
+        response = requests.get(url_home)
 
-    # Find all article elements with the specified class
-    articles = soup.find_all("article", class_="product_pod")
-    for article in articles:
-        # Find the href attribute of the nested <a> element
-        href = article.find("h3").find("a")["href"]
-        absolute_url = urljoin(url_home, href)  # Convert relative URL to absolute URL
-        urls.append(absolute_url)  # Add the absolute URL to the list of URLs
+        # Retrieve the content of the response
+        html_content = response.content
+        # Check if the request was successful
+        if response.status_code == 200:
+            print(f"Access to {url_home} successful")
+        else:
+            print(f"Access to {url_home} unsuccessful")
 
-        # # >>>>>>==========================TEST============================
-        # loop to find next page
-        next_page = soup.find("li", class_="next")
-        if next_page is not None:
-            next_page = next_page.find("a")["href"]
-            absolute_url = urljoin(url_home, next_page)
-            urls.append(absolute_url)
+        # Parse the HTML
+        soup = BeautifulSoup(html_content, "html.parser")
 
-        # # ==========================TEST============================<<<<<<<
+        # Find and extract every URL
+        url_home = response.url  # Get the base URL of the page
 
-    return urls  # Return the list of extracted URLs
+        # Find all article elements with the specified class
+        articles = soup.find_all("article", class_="product_pod")
+        for article in articles:
+            # Find the href attribute of the nested <a> element
+            href = article.find("h3").find("a")["href"]
+            absolute_url = urljoin(
+                url_home, href
+            )  # Convert relative URL to absolute URL
+            urls.append(absolute_url)  # Add the absolute URL to the list of URLs
+
+        # Find the next page link
+        next_link = soup.find("li", class_="next")
+        if next_link is None:
+            break  # Exit the loop if there is no next page
+
+        # Get the URL for the next page
+        next_page_url = urljoin(url_home, next_link.find("a")["href"])
+        url_home = next_page_url
+
+    return urls
+
+
+# Set the initial URL for extraction
+url_home = "https://books.toscrape.com/catalogue/page-1.html"
 
 
 # Call the extract_urls function and store the result in the 'result' variable
 result = extract_urls(url_home)
+
+# # Print result with a new line for each URL
+# for url in result:
+#     print(url)
+
 # print(result)
 
 
+# Function ==========> extract data from a list of URLs
 def extract_data(result):
     book_data = []  # Initialize an empty list to store book data
 
@@ -85,49 +86,22 @@ def extract_data(result):
         product_page_url = url
         universal_product_code = (
             soup.find("table", class_="table-striped").find("td").text
-            if soup.find("table", class_="table-striped")
-            else None
         )
-        # title = soup.find("div", class_="product_main").find("h1").text
+        title = soup.find("div", class_="product_main").find("h1").text
 
-        # # >>>>>>==========================TEST============================
-        # Extract title with error handling
-        title_element = soup.find("div", class_="product_main")
-        title = title_element.find("h1").text if title_element else None
-        # # ==========================TEST============================<<<<<<<
-
-        # price_including_tax = (
-        #     soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
-        # ).text.strip("£")
-
-        # # >>>>>>==========================TEST============================
-        # Extract price including tax with error handling
-        price_including_tax_element = soup.find("th", string="Price (incl. tax)")
         price_including_tax = (
-            price_including_tax_element.find_next_sibling("td").string
-            if price_including_tax_element
-            else None
-        )
-        # # ==========================TEST============================<<<<<<<
-
-        # price_excluding_tax = (
-        #     soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
-        # ).text.strip("£")
-        # # >>>>>>==========================TEST============================
-        # Extract price including tax with error handling
-        price_excluding_tax_element = soup.find("th", string="Price (incl. tax)")
+            soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string
+        ).text.strip("£")
         price_excluding_tax = (
-            price_excluding_tax_element.find_next_sibling("td").string
-            if price_excluding_tax_element
-            else None
-        )
-        # # ==========================TEST============================<<<<<<<
+            soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string
+        ).text.strip("£")
+
         # Extract availability text
         availability_text = soup.find("p", class_="instock availability").text.strip()
         # Extract the number from the availability text using regular expressions and string manipulation
-        match = re.search(r"\d+", availability_text)
-
-        # Search for any sequence of digits
+        match = re.search(
+            r"\d+", availability_text
+        )  # Search for any sequence of digits
         if match:
             number_available = match.group()  # Extract the matched digits
         else:
@@ -146,15 +120,6 @@ def extract_data(result):
             .decode("utf-8")
             .strip()
         )
-        # >>>>>>>>==========================TEST============================
-        # Extract product description with error handling
-        product_description_element = soup.find("div", {"id": "product_description"})
-        extracted_text = (
-            product_description_element.find_next("p").string
-            if product_description_element
-            else None
-        )
-        # ==========================TEST============================<<<<<<<
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
