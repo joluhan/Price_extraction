@@ -59,15 +59,9 @@ def extract_urls(url_home):
 # Set the initial URL for extraction
 url_home = "https://books.toscrape.com/catalogue/page-1.html"
 
-
 # Call the extract_urls function and store the result in the 'result' variable
 result = extract_urls(url_home)
-
-url_list = []
-# store results in a list
-for url in result:
-    url_list.append(url)
-    # print(url_list)
+# print(f"the result is: {result}")
 
 
 # Function ==========> extract data from a list of URLs
@@ -151,7 +145,7 @@ def extract_data(result):
 
 
 # Pass the result of extract_urls() to extract_data()
-book_data = extract_data(url_list)
+book_data = extract_data(result)
 
 
 # Function ==========> save data to a CSV file
