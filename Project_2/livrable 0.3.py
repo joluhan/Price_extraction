@@ -65,7 +65,11 @@ result = extract_urls(url_home)
 
 # Print result with a new line for each URL
 for url in result:
-    print(url)
+    # print(url)
+    # store results in a list
+    url_list = []
+    url_list.append(url)
+    print(url_list)
 
 
 # # Function ==========> extract data from a list of URLs
