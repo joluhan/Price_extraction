@@ -27,14 +27,16 @@ def category_urls_list(base_url):
     category_list = soup.find("ul", class_="nav-list")
     category_items = category_list.find_all("li")
 
-    for category_item in category_items:
-        category_url = urljoin(base_url, category_item.find("a")["href"])
-        category_urls_list.append(category_url)
+    for index, category_item in enumerate(category_items):
+        if index > 0:  # Start appending from the second element
+            category_url = urljoin(base_url, category_item.find("a")["href"])
+            category_urls_list.append(category_url)
 
     return category_urls_list
 
+
 list_urls = category_urls_list(base_url)
-print(list_urls)
+# print(list_urls)
 # # ==========================TEST============================<<<<<<<
 
 
