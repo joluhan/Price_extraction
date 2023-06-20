@@ -2,9 +2,10 @@
 
 import requests
 from bs4 import BeautifulSoup
-import csv
-import os
-import re
+
+# import csv
+# import os
+# import re
 from unicodedata import normalize
 from urllib.parse import urljoin
 
@@ -23,14 +24,17 @@ def category_urls_list(base_url):
     response = requests.get(base_url)
     # Parse the HTML
     soup = BeautifulSoup(response, "html.parser")
-
+    # find category urls
     url_category_extraction = (
         soup.find("ul", {"class": "nav nav-list"}).find("li").find("a").find_all("a")
     )
+    # loop to extract the url of each category and append it to the list category_urls_list
     for url_category in url_category_extraction:
         category_urls_list.append(url_category.find("a")["href"])
+        print(url_category.find("a")["href"])
 
 
+category_urls_list(base_url)
 # # ==========================TEST============================<<<<<<<
 
 
