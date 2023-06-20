@@ -18,25 +18,23 @@ base_url = "https://books.toscrape.com/catalogue/page-1.html"
 
 
 def category_urls_list(base_url):
-    # category_urls_list = []
+    category_urls_list = []
 
-    # Send a GET request to the specified URL
     response = requests.get(base_url)
-    # Parse the HTML
-    soup = BeautifulSoup(response, "html.parser")
-    html_content = response.content  # Get the content of the response
-    print(html_content.prettify())
-    # find category urls
-    # url_category_extraction = (
-    #     soup.find("ul", {"class": "nav nav-list"}).find("li").find("a").find_all("a")
-    # )
-    # # loop to extract the url of each category and append it to the list category_urls_list
-    # for url_category in url_category_extraction:
-    #     category_urls_list.append(url_category.find("a")["href"])
-    #     print(url_category.find("a")["href"])
+    html_content = response.content
+    soup = BeautifulSoup(html_content, "html.parser")
 
+    category_list = soup.find("ul", class_="nav-list")
+    category_items = category_list.find_all("li")
 
-category_urls_list(base_url)
+    for category_item in category_items:
+        category_url = urljoin(base_url, category_item.find("a")["href"])
+        category_urls_list.append(category_url)
+
+    return category_urls_list
+
+list_urls = category_urls_list(base_url)
+print(list_urls)
 # # ==========================TEST============================<<<<<<<
 
 
