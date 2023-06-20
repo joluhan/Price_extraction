@@ -1,4 +1,4 @@
-# ============================== Étape 2 : Extraire les données d’une catégorie ==============================
+# ============================== Étape 3 : Extraire les données du site ==============================
 
 import requests
 from bs4 import BeautifulSoup
@@ -185,6 +185,4 @@ filename = "book_data03.csv"
 save_data_to_csv(book_data, directory, filename)
 
 
-# # >>>>>>==========================TEST============================
 
-# # ==========================TEST============================<<<<<<<
