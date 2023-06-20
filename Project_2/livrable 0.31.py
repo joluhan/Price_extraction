@@ -185,26 +185,29 @@ def save_data_to_csv(book_data, directory, filename):
 # Define the directory where the file will be saved
 directory = r"C:\Users\johan\Desktop"
 
-# Iterate over each category URL
-for category_url in list_urls:
-    category_name = category_url.split("/")[
-        -2
-    ]  # Extract the category name from the URL
 
-    category_directory = os.path.join(
-        directory, category_name
-    )  # Create a directory for the category if it doesn't exist
-    if not os.path.exists(category_directory):
-        os.makedirs(category_directory)
+# >>>>===============================TODO==============================
+# # Iterate over each category URL
+# for category_url in list_urls:
+#     category_name = category_url.split("/")[
+#         -2
+#     ]  # Extract the category name from the URL
 
-    category_book_urls = extract_urls(
-        [category_url]
-    )  # Extract book URLs for the current category
-    category_book_data = extract_data(
-        category_book_urls
-    )  # Extract book data for the current category
+#     category_directory = os.path.join(
+#         directory, category_name
+#     )  # Create a directory for the category if it doesn't exist
+#     if not os.path.exists(category_directory):
+#         os.makedirs(category_directory)
 
-    category_filename = f"{category_name}_book_data.csv"  # Specify the filename for the category book data
-    save_data_to_csv(
-        category_book_data, category_directory, category_filename
-    )  # Save the category book data to a CSV file
+#     category_book_urls = extract_urls(
+#         [category_url]
+#     )  # Extract book URLs for the current category
+#     category_book_data = extract_data(
+#         category_book_urls
+#     )  # Extract book data for the current category
+
+#     category_filename = f"{category_name}_book_data.csv"  # Specify the filename for the category book data
+#     save_data_to_csv(
+#         category_book_data, category_directory, category_filename
+#     )  # Save the category book data to a CSV file
+# ===============================TODO==============================<<<<
