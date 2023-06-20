@@ -6,6 +6,7 @@ import re
 from unicodedata import normalize
 from urllib.parse import urljoin
 
+
 # Function to extract category URLs
 def category_urls_list(base_url):
     category_urls_list = []  # Create an empty list to store category URLs
@@ -35,6 +36,7 @@ def category_urls_list(base_url):
 base_url = "https://books.toscrape.com/catalogue/page-1.html"
 list_urls = category_urls_list(base_url)
 
+
 # Function to extract book URLs from each category
 def extract_urls(list_urls):
     urls = []
@@ -55,7 +57,9 @@ def extract_urls(list_urls):
         # Find all article elements with the specified class
         articles = soup.find_all("article", class_="product_pod")
         for article in articles:
-            href = article.find("h3").find("a")["href"]  # Find the href attribute of the <a> element
+            href = article.find("h3").find("a")[
+                "href"
+            ]  # Find the href attribute of the <a> element
             absolute_url = urljoin(
                 url_home, href
             )  # Convert relative URL to absolute URL
@@ -65,13 +69,16 @@ def extract_urls(list_urls):
         if next_link is None:
             break  # Exit the loop if there is no next page
 
-        next_page_url = urljoin(url_home, next_link.find("a")["href"])  # Get the URL for the next page
+        next_page_url = urljoin(
+            url_home, next_link.find("a")["href"]
+        )  # Get the URL for the next page
         list_urls.append(next_page_url)  # Append the next page URL to the list of URLs
 
     return urls
 
 
 book_urls = extract_urls(list_urls)
+
 
 # Function to extract data from a list of URLs
 def extract_data(book_urls):
@@ -80,20 +87,38 @@ def extract_data(book_urls):
     for url in book_urls:
         response = requests.get(url)  # Send a GET request to the URL
         html_content = response.content  # Get the content of the response
-        soup = BeautifulSoup(html_content, "html.parser")  # Create a BeautifulSoup object for parsing HTML
+        soup = BeautifulSoup(
+            html_content, "html.parser"
+        )  # Create a BeautifulSoup object for parsing HTML
 
         # Extract various data from the HTML using BeautifulSoup .find
         product_page_url = url
-        universal_product_code = soup.find("table", class_="table-striped").find("td").text
+        universal_product_code = (
+            soup.find("table", class_="table-striped").find("td").text
+        )
         title = soup.find("div", class_="product_main").find("h1").text
-        price_including_tax = soup.find("th", string="Price (incl. tax)").find_next_sibling("td").string.strip("£")
-        price_excluding_tax = soup.find("th", string="Price (excl. tax)").find_next_sibling("td").string.strip("£")
+        price_including_tax = (
+            soup.find("th", string="Price (incl. tax)")
+            .find_next_sibling("td")
+            .string.strip("£")
+        )
+        price_excluding_tax = (
+            soup.find("th", string="Price (excl. tax)")
+            .find_next_sibling("td")
+            .string.strip("£")
+        )
 
         availability_text = soup.find("p", class_="instock availability").text.strip()
-        match = re.search(r"\d+", availability_text)  # Search for any sequence of digits
+        match = re.search(
+            r"\d+", availability_text
+        )  # Search for any sequence of digits
         number_available = match.group() if match else None
 
-        extracted_text = soup.find("div", {"id": "product_description"}).find_next("p").string.strip()
+        extracted_text = (
+            soup.find("div", {"id": "product_description"})
+            .find_next("p")
+            .string.strip()
+        )
         product_description = (
             normalize("NFKD", extracted_text)
             .encode("ascii", "ignore")
@@ -103,7 +128,9 @@ def extract_data(book_urls):
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
-        image_url = urljoin(url, soup.find("div", class_="item active").find("img")["src"])
+        image_url = urljoin(
+            url, soup.find("div", class_="item active").find("img")["src"]
+        )
 
         # Create a dictionary with the extracted data and append it to the book_data list
         book_data.append(
@@ -126,6 +153,7 @@ def extract_data(book_urls):
 
 book_data = extract_data(book_urls)
 
+
 # Function to save data to a CSV file
 def save_data_to_csv(book_data, directory, filename):
     fieldnames = [
@@ -140,26 +168,43 @@ def save_data_to_csv(book_data, directory, filename):
         "Review Rating",
         "Img url",
     ]
-    filepath = os.path.join(directory, filename)  # Create the file path by joining the directory and filename
+    filepath = os.path.join(
+        directory, filename
+    )  # Create the file path by joining the directory and filename
 
     with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)  # Create a CSV writer object using the field names
+        writer = csv.DictWriter(
+            csvfile, fieldnames=fieldnames
+        )  # Create a CSV writer object using the field names
         writer.writeheader()  # Write the header row with the field names
         writer.writerows(book_data)  # Write the data rows to the CSV file
 
     print(f"Data has been successfully saved to {filepath}")
 
 
+# Define the directory where the file will be saved
+directory = r"C:\Users\johan\Desktop"
+
 # Iterate over each category URL
 for category_url in list_urls:
-    category_name = category_url.split("/")[-2]  # Extract the category name from the URL
-    
-    category_directory = os.path.join(directory, category_name)  # Create a directory for the category if it doesn't exist
+    category_name = category_url.split("/")[
+        -2
+    ]  # Extract the category name from the URL
+
+    category_directory = os.path.join(
+        directory, category_name
+    )  # Create a directory for the category if it doesn't exist
     if not os.path.exists(category_directory):
         os.makedirs(category_directory)
-    
-    category_book_urls = extract_urls([category_url])  # Extract book URLs for the current category
-    category_book_data = extract_data(category_book_urls)  # Extract book data for the current category
-    
+
+    category_book_urls = extract_urls(
+        [category_url]
+    )  # Extract book URLs for the current category
+    category_book_data = extract_data(
+        category_book_urls
+    )  # Extract book data for the current category
+
     category_filename = f"{category_name}_book_data.csv"  # Specify the filename for the category book data
-    save_data_to_csv(category_book_data, category_directory, category_filename)  # Save the category book data to a CSV file
+    save_data_to_csv(
+        category_book_data, category_directory, category_filename
+    )  # Save the category book data to a CSV file
