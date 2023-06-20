@@ -50,7 +50,51 @@ list_urls = category_urls_list(base_url)
 # # >>>>>>==========================TODO============================
 # B= create another loop that get the book url in each category
 # # >>>>>>==========================TEST============================
+# Function ==========> urls extraction
+def extract_urls(list_urls):
+    urls = []
 
+    for url in list_urls:
+        # Send a GET request to the specified URL
+        response = requests.get(url)
+
+        # Retrieve the content of the response
+        html_content = response.content
+        # Check if the request was successful
+        if response.status_code == 200:
+            print(f"Access to {url} successful")
+        else:
+            print(f"Access to {url} unsuccessful")
+
+        # Parse the HTML
+        soup = BeautifulSoup(html_content, "html.parser")
+
+        # Find and extract every URL
+        url_home = response.url  # Get the base URL of the page
+
+        # Find all article elements with the specified class
+        articles = soup.find_all("article", class_="product_pod")
+        for article in articles:
+            # Find the href attribute of the <a> element
+            href = article.find("h3").find("a")["href"]
+            absolute_url = urljoin(
+                url_home, href
+            )  # Convert relative URL to absolute URL
+            urls.append(absolute_url)  # Add the absolute URL to the list of URLs
+
+        # Find the next page link
+        next_link = soup.find("li", class_="next")
+        if next_link is None:
+            break  # Exit the loop if there is no next page
+
+        # Get the URL for the next page
+        next_page_url = urljoin(url_home, next_link.find("a")["href"])
+        list_urls.append(next_page_url)  # Append the next page URL to the list of URLs
+
+    return urls
+
+
+# /print(extract_urls(list_urls))
 
 # # ==========================TEST============================<<<<<<<
 
