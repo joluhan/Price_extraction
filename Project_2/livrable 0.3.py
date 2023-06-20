@@ -140,10 +140,6 @@ def extract_data(result):
     return book_data  # Return the list of extracted book data
 
 
-# # >>>>>>==========================TEST============================
-
-# # ==========================TEST============================<<<<<<<
-
 # Pass the result of extract_urls() to extract_data()
 book_data = extract_data(result)
 
@@ -187,3 +183,8 @@ filename = "book_data03.csv"
 
 # Call the function to save the book_data to a CSV file in the specified directory
 save_data_to_csv(book_data, directory, filename)
+
+
+# # >>>>>>==========================TEST============================
+
+# # ==========================TEST============================<<<<<<<
