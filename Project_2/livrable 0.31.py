@@ -6,8 +6,8 @@ import re
 from unicodedata import normalize
 from urllib.parse import urljoin
 
-# >>>>>>==============FONCTION DEFINITIONS==============
-# Function to extract category URLs
+
+# Function to extract category URL
 def category_urls_list(base_url):
     category_urls_list = []  # Create an empty list to store category URLs
 
@@ -77,6 +77,7 @@ def extract_data(book_urls):
     book_data = []  # Initialize an empty list to store book data
 
     for url in book_urls:
+        print(f"Processing URL: {url}")
         response = requests.get(url)  # Send a GET request to the URL
         html_content = response.content  # Get the content of the response
         soup = BeautifulSoup(
@@ -144,7 +145,7 @@ def extract_data(book_urls):
 
 
 # Function to save data to a CSV file
-def save_data_to_csv(book_data, directory, filename):
+def save_data_to_csv(book_data, directory, category):
     fieldnames = [
         "Pdt url",
         "UPC",
@@ -157,47 +158,38 @@ def save_data_to_csv(book_data, directory, filename):
         "Review Rating",
         "Img url",
     ]
-    filepath = os.path.join(
-        directory, filename
-    )  # Create the file path by joining the directory and filename
+    filename = f"book_data_{category}.csv"  # Create the filename for the category
+    filepath = os.path.join(directory, filename)
 
     with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(
-            csvfile, fieldnames=fieldnames
-        )  # Create a CSV writer object using the field names
-        writer.writeheader()  # Write the header row with the field names
-        writer.writerows(book_data)  # Write the data rows to the CSV file
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(book_data)
 
     print(f"Data has been successfully saved to {filepath}")
 
 
 # Function that uses functions category_urls_list(), extract_urls(), extract_data(), and save_data_to_csv() to save data to a CSV file for each category
-def save_data_to_csv_all_categories(directory, filename):
-    list_urls = category_urls_list(base_url)  # Extract URLs for all categories
-    book_urls = extract_urls(list_urls)  # Extract URLs for all books
-    book_data = extract_data(book_urls)  # Extract data for all books
+def save_data_to_csv_all_categories(directory):
+    base_url = "https://books.toscrape.com/catalogue/page-1.html"
+    # Extract URLs
+    list_urls = category_urls_list(base_url)
 
-    counter = 1
-    for data in book_data:
-        # Generate the new filename with a counter
-        new_filename = f"{filename[:-4]}{counter:02d}.csv"
+    for category_url in list_urls:
+        category_name = category_url.split("/")[
+            -2
+        ]  # Extract the category name from the URL
+        book_urls = extract_urls(
+            [category_url]
+        )  # Extract URLs for books in the category
+        book_data = extract_data(book_urls)  # Extract data for books in the category
 
-        # Save data to a CSV file with the new filename
-        save_data_to_csv([data], directory, new_filename)
-
-        counter += 1
+        if book_data:
+            save_data_to_csv(book_data, directory, category_name)
 
 
-# ==============FONCTION DEFINITIONS==============<<<<<<
-
-
-base_url = "https://books.toscrape.com/catalogue/page-1.html"
-
-# Define the directory where the file will be saved
+# Define the directory where the files will be saved
 directory = r"C:\Users\johan\Desktop"
 
-# Specify the filename for the CSV file
-filename = "book_data.csv"
-
-# Creation of a variable that is processing save_data_to_csv_all_categories() function
-save_data_to_csv_all_categories(directory, filename)
+# Call the function to save data to CSV files for all categories
+save_data_to_csv_all_categories(directory)
