@@ -146,6 +146,7 @@ def extract_urls(list_urls):
 # ======================================TEST======================================
 import unicodedata
 
+
 def extract_data(book_urls):
     book_data = []  # Initialize an empty list to store book data
 
@@ -182,11 +183,20 @@ def extract_data(book_urls):
         number_available = match.group() if match else None
 
         extracted_text = soup.find("div", {"id": "product_description"}).string
-        product_description = (
-            unicodedata.normalize("NFKD", extracted_text).strip()
-            if extracted_text
-            else None
-        )
+
+        # product_description = (
+        #     unicodedata.normalize("NFKD", extracted_text).strip()
+        #     if extracted_text
+        #     else None
+        # )
+        # ======================================TEST======================================
+        
+        if extracted_text is None:
+            continue  # Skip this book if product description is missing
+
+        else:
+            product_description = unicodedata.normalize("NFKD", extracted_text).strip()
+        # ======================================TEST======================================
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
         review_rating = soup.find("p", class_="star-rating")["class"][1]
@@ -211,6 +221,7 @@ def extract_data(book_urls):
         )
 
     return book_data  # Return the list of extracted book data
+
 
 # ======================================TEST======================================
 
