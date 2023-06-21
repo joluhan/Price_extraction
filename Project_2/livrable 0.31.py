@@ -7,6 +7,7 @@ from unicodedata import normalize
 from urllib.parse import urljoin
 
 
+# >>>>>>==============FONCTION DEFINITIONS==============
 # Function to extract category URLs
 def category_urls_list(base_url):
     category_urls_list = []  # Create an empty list to store category URLs
@@ -30,11 +31,6 @@ def category_urls_list(base_url):
             )  # Append the category URL to the list
 
     return category_urls_list  # Return the list of category URLs
-
-
-# Call the function to get the list of category URLs
-base_url = "https://books.toscrape.com/catalogue/page-1.html"
-list_urls = category_urls_list(base_url)
 
 
 # Function to extract book URLs from each category
@@ -75,9 +71,6 @@ def extract_urls(list_urls):
         list_urls.append(next_page_url)  # Append the next page URL to the list of URLs
 
     return urls
-
-
-book_urls = extract_urls(list_urls)
 
 
 # Function to extract data from a list of URLs
@@ -151,9 +144,6 @@ def extract_data(book_urls):
     return book_data  # Return the list of extracted book data
 
 
-book_data = extract_data(book_urls)
-
-
 # Function to save data to a CSV file
 def save_data_to_csv(book_data, directory, filename):
     fieldnames = [
@@ -181,6 +171,20 @@ def save_data_to_csv(book_data, directory, filename):
 
     print(f"Data has been successfully saved to {filepath}")
 
+
+# ==============FONCTION DEFINITIONS==============<<<<<<
+
+
+base_url = "https://books.toscrape.com/catalogue/page-1.html"
+
+# Call the function to get the list of category URLs
+list_urls = category_urls_list(base_url)
+
+# Call the function extract_urls()
+book_urls = extract_urls(list_urls)
+
+# Call the function extract_data()
+book_data = extract_data(book_urls)
 
 # Define the directory where the file will be saved
 directory = r"C:\Users\johan\Desktop"
