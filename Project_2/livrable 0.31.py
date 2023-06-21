@@ -172,46 +172,33 @@ def save_data_to_csv(book_data, directory, filename):
     print(f"Data has been successfully saved to {filepath}")
 
 
+# Function that uses functions category_urls_list(), extract_urls(), extract_data(), and save_data_to_csv() to save data to a CSV file for each category
+def save_data_to_csv_all_categories(directory, filename):
+    list_urls = category_urls_list(base_url)  # Extract URLs for all categories
+    book_urls = extract_urls(list_urls)  # Extract URLs for all books
+    book_data = extract_data(book_urls)  # Extract data for all books
+
+    counter = 1
+    for data in book_data:
+        # Generate the new filename with a counter
+        new_filename = f"{filename[:-4]}{counter:02d}.csv"
+
+        # Save data to a CSV file with the new filename
+        save_data_to_csv([data], directory, new_filename)
+
+        counter += 1
+
+
 # ==============FONCTION DEFINITIONS==============<<<<<<
 
 
 base_url = "https://books.toscrape.com/catalogue/page-1.html"
 
-# Call the function to get the list of category URLs
-list_urls = category_urls_list(base_url)
-
-# Call the function extract_urls()
-book_urls = extract_urls(list_urls)
-
-# Call the function extract_data()
-book_data = extract_data(book_urls)
-
 # Define the directory where the file will be saved
 directory = r"C:\Users\johan\Desktop"
 
+# Specify the filename for the CSV file
+filename = "book_data.csv"
 
-# >>>>===============================TODO==============================
-# # Iterate over each category URL
-# for category_url in list_urls:
-#     category_name = category_url.split("/")[
-#         -2
-#     ]  # Extract the category name from the URL
-
-#     category_directory = os.path.join(
-#         directory, category_name
-#     )  # Create a directory for the category if it doesn't exist
-#     if not os.path.exists(category_directory):
-#         os.makedirs(category_directory)
-
-#     category_book_urls = extract_urls(
-#         [category_url]
-#     )  # Extract book URLs for the current category
-#     category_book_data = extract_data(
-#         category_book_urls
-#     )  # Extract book data for the current category
-
-#     category_filename = f"{category_name}_book_data.csv"  # Specify the filename for the category book data
-#     save_data_to_csv(
-#         category_book_data, category_directory, category_filename
-#     )  # Save the category book data to a CSV file
-# ===============================TODO==============================<<<<
+# Creation of a variable that is processing save_data_to_csv_all_categories() function
+save_data_to_csv_all_categories(directory, filename)
