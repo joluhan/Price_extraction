@@ -6,7 +6,6 @@ import re
 from unicodedata import normalize
 from urllib.parse import urljoin
 
-
 # >>>>>>==============FONCTION DEFINITIONS==============
 # Function to extract category URLs
 def category_urls_list(base_url):
