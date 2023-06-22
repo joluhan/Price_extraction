@@ -1,3 +1,5 @@
+# ============================== Étape 3.1 : Extraire les données du site - loops ==============================
+
 import requests
 from bs4 import BeautifulSoup
 import csv

@@ -1,5 +1,4 @@
-# ============================== Étape 4 : Savegarder les images ==============================
-
+# ============================== Étape 5 : Livrable Final ==============================
 
 import requests
 from bs4 import BeautifulSoup
@@ -8,6 +7,11 @@ import os
 import re
 from unicodedata import normalize
 from urllib.parse import urljoin
+
+# >>>>==============================TODO==============================
+# create folders for each category that store images and csv file
+# each folder will have the name of its category
+# ==============================TODO==============================<<<<
 
 
 # Function to extract category URL
