@@ -182,15 +182,25 @@ def extract_data(book_urls):
         )  # Search for any sequence of digits
         number_available = match.group() if match else None
 
-        extracted_text = soup.find("div", {"id": "product_description"}).string
+        # extracted_text = soup.find("div", {"id": "product_description"}).string
 
-        product_description = (
-            unicodedata.normalize("NFKD", extracted_text).strip()
-            if extracted_text
-            else None
-        )
+        # product_description = (
+        #     unicodedata.normalize("NFKD", extracted_text).strip()
+        #     if extracted_text
+        #     else None
+        # )
         # ======================================TEST======================================
-
+        extracted_text = (
+            soup.find("div", {"id": "product_description"})
+            .find_next("p")
+            .string.strip()
+        )
+        product_description = (
+            normalize("NFKD", extracted_text)
+            .encode("ascii", "ignore")
+            .decode("utf-8")
+            .strip()
+        )
         # ======================================TEST======================================
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
