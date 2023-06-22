@@ -145,7 +145,9 @@ def extract_data(book_urls, directory):
             )
 
             # Download the image
-            image_filename = download_image(image_url, directory, universal_product_code)
+            image_filename = download_image(
+                image_url, directory, universal_product_code
+            )
 
         except Exception as e:
             print(f"An error occurred while extracting data for URL: {url}")
@@ -176,7 +178,9 @@ def extract_data(book_urls, directory):
 def download_image(image_url, directory, unique_identifier):
     response = requests.get(image_url)  # Send a GET request to the image URL
     image_content = response.content  # Get the content of the response
-    image_extension = os.path.splitext(image_url)[1]  # Get the file extension from the URL
+    image_extension = os.path.splitext(image_url)[
+        1
+    ]  # Get the file extension from the URL
 
     # Generate a unique filename using the unique identifier and the image extension
     image_filename = f"{unique_identifier}{image_extension}"
@@ -229,10 +233,13 @@ def save_data_to_csv_all_categories(directory):
         book_urls = extract_urls(
             [category_url]
         )  # Extract URLs for books in the category
-        book_data = extract_data(book_urls, directory)  # Extract data for books in the category
+        book_data = extract_data(
+            book_urls, directory
+        )  # Extract data for books in the category
 
         if book_data:
             save_data_to_csv(book_data, directory, category_name)
+
 
 # Define the directory where the files will be saved
 directory = r"C:\Users\johan\Desktop"
