@@ -246,5 +246,3 @@ directory = r"C:\Users\johan\Desktop"
 
 # Call the function to save data to CSV files for all categories
 save_data_to_csv_all_categories(directory)
-
-# ======================================TEST======================================
