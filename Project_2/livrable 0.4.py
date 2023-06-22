@@ -72,8 +72,8 @@ def extract_urls(list_urls):
     return urls
 
 
-# Function to extract data from URL list
-def extract_data(book_urls):
+# Function to extract data from URL list and download images
+def extract_data(book_urls, directory):
     book_data = []  # Initialize an empty list to store book data
 
     for url in book_urls:
@@ -144,6 +144,9 @@ def extract_data(book_urls):
                 url, soup.find("div", class_="item active").find("img")["src"]
             )
 
+            # Download the image
+            image_filename = download_image(image_url, directory, universal_product_code)
+
         except Exception as e:
             print(f"An error occurred while extracting data for URL: {url}")
             print(f"Error details: {str(e)}")
@@ -162,10 +165,29 @@ def extract_data(book_urls):
                 "Category": category,
                 "Review Rating": review_rating,
                 "Img url": image_url,
+                "Image Filename": image_filename,  # Add the image filename to the dictionary
             }
         )
 
     return book_data  # Return the list of extracted book data
+
+
+# Function to download the image from the given URL and save it with a unique identifier
+def download_image(image_url, directory, unique_identifier):
+    response = requests.get(image_url)  # Send a GET request to the image URL
+    image_content = response.content  # Get the content of the response
+    image_extension = os.path.splitext(image_url)[1]  # Get the file extension from the URL
+
+    # Generate a unique filename using the unique identifier and the image extension
+    image_filename = f"{unique_identifier}{image_extension}"
+    filepath = os.path.join(directory, image_filename)
+
+    with open(filepath, "wb") as image_file:
+        image_file.write(image_content)
+
+    print(f"Image downloaded: {image_filename}")
+
+    return image_filename
 
 
 # Function to save data to a CSV file
@@ -181,6 +203,7 @@ def save_data_to_csv(book_data, directory, category):
         "Category",
         "Review Rating",
         "Img url",
+        "Image Filename",
     ]
     filename = f"book_data_{category}.csv"  # Create the filename for the category
     filepath = os.path.join(directory, filename)
@@ -206,11 +229,10 @@ def save_data_to_csv_all_categories(directory):
         book_urls = extract_urls(
             [category_url]
         )  # Extract URLs for books in the category
-        book_data = extract_data(book_urls)  # Extract data for books in the category
+        book_data = extract_data(book_urls, directory)  # Extract data for books in the category
 
         if book_data:
             save_data_to_csv(book_data, directory, category_name)
-
 
 # Define the directory where the files will be saved
 directory = r"C:\Users\johan\Desktop"
