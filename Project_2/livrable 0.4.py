@@ -193,7 +193,7 @@ def save_data_to_csv(book_data, directory, category):
     print(f"Data has been successfully saved to {filepath}")
 
 
-# Function that uses functions category_urls_list(), extract_urls(), extract_data(), and save_data_to_csv() to save data to a CSV file for each category
+# Function that uses functions to save data to a CSV file for each category
 def save_data_to_csv_all_categories(directory):
     base_url = "https://books.toscrape.com/catalogue/page-1.html"
     # Extract URLs
