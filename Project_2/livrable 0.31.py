@@ -184,25 +184,13 @@ def extract_data(book_urls):
 
         extracted_text = soup.find("div", {"id": "product_description"}).string
 
-        # product_description = (
-        #     unicodedata.normalize("NFKD", extracted_text).strip()
-        #     if extracted_text
-        #     else None
-        # )
-        # ======================================TEST======================================
-        # condition if product_description none skip else continue
         product_description = (
             unicodedata.normalize("NFKD", extracted_text).strip()
             if extracted_text
             else None
         )
+        # ======================================TEST======================================
 
-
-        # if extracted_text is None:
-        #     continue  # Skip this book if product description is missing
-
-        # else:
-        #     product_description = unicodedata.normalize("NFKD", extracted_text).strip()
         # ======================================TEST======================================
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
