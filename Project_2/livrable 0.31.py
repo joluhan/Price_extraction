@@ -146,7 +146,9 @@ def extract_urls(list_urls):
 
 #     return book_data  # Return the list of extracted book data
 
- # ======================================TEST======================================
+
+# ======================================TEST======================================
+# Function to extract data from URL list
 def extract_data(book_urls):
     book_data = []  # Initialize an empty list to store book data
 
@@ -155,7 +157,9 @@ def extract_data(book_urls):
 
         response = requests.get(url)  # Send a GET request to the URL
         html_content = response.content  # Get the content of the response
-        soup = BeautifulSoup(html_content, "html.parser")  # Create a BeautifulSoup object for parsing HTML
+        soup = BeautifulSoup(
+            html_content, "html.parser"
+        )  # Create a BeautifulSoup object for parsing HTML
 
         # Initialize variables for data extraction
         product_page_url = None
@@ -172,7 +176,9 @@ def extract_data(book_urls):
         try:
             # Extract various data from the HTML using BeautifulSoup .find
             product_page_url = url
-            universal_product_code = soup.find("table", class_="table-striped").find("td").text
+            universal_product_code = (
+                soup.find("table", class_="table-striped").find("td").text
+            )
             title = soup.find("div", class_="product_main").find("h1").text
             price_including_tax = (
                 soup.find("th", string="Price (incl. tax)")
@@ -185,8 +191,12 @@ def extract_data(book_urls):
                 .string.strip("£")
             )
 
-            availability_text = soup.find("p", class_="instock availability").text.strip()
-            match = re.search(r"\d+", availability_text)  # Search for any sequence of digits
+            availability_text = soup.find(
+                "p", class_="instock availability"
+            ).text.strip()
+            match = re.search(
+                r"\d+", availability_text
+            )  # Search for any sequence of digits
             number_available = match.group() if match else None
 
             try:
@@ -206,7 +216,9 @@ def extract_data(book_urls):
 
             category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
             review_rating = soup.find("p", class_="star-rating")["class"][1]
-            image_url = urljoin(url, soup.find("div", class_="item active").find("img")["src"])
+            image_url = urljoin(
+                url, soup.find("div", class_="item active").find("img")["src"]
+            )
 
         except Exception as e:
             print(f"An error occurred while extracting data for URL: {url}")
@@ -232,7 +244,7 @@ def extract_data(book_urls):
     return book_data  # Return the list of extracted book data
 
 
- # ======================================TEST======================================
+# ======================================TEST======================================
 
 
 # Function to save data to a CSV file
