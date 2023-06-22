@@ -72,6 +72,81 @@ def extract_urls(list_urls):
     return urls
 
 
+# def extract_data(book_urls):
+#     book_data = []  # Initialize an empty list to store book data
+
+#     for url in book_urls:
+#         print(f"Processing URL: {url}")  # Print the URL being processed
+
+#         response = requests.get(url)  # Send a GET request to the URL
+#         html_content = response.content  # Get the content of the response
+#         soup = BeautifulSoup(
+#             html_content, "html.parser"
+#         )  # Create a BeautifulSoup object for parsing HTML
+
+#         # Extract various data from the HTML using BeautifulSoup .find
+#         product_page_url = url
+#         universal_product_code = (
+#             soup.find("table", class_="table-striped").find("td").text
+#         )
+#         title = soup.find("div", class_="product_main").find("h1").text
+#         price_including_tax = (
+#             soup.find("th", string="Price (incl. tax)")
+#             .find_next_sibling("td")
+#             .string.strip("£")
+#         )
+#         price_excluding_tax = (
+#             soup.find("th", string="Price (excl. tax)")
+#             .find_next_sibling("td")
+#             .string.strip("£")
+#         )
+
+#         availability_text = soup.find("p", class_="instock availability").text.strip()
+#         match = re.search(
+#             r"\d+", availability_text
+#         )  # Search for any sequence of digits
+#         number_available = match.group() if match else None
+
+#         try:
+#             extracted_text = (
+#                 soup.find("div", {"id": "product_description"})
+#                 .find_next("p")
+#                 .string.strip()
+#             )
+#             product_description = (
+#                 normalize("NFKD", extracted_text)
+#                 .encode("ascii", "ignore")
+#                 .decode("utf-8")
+#                 .strip()
+#             )
+#         except AttributeError:
+#             product_description = None
+
+#         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
+#         review_rating = soup.find("p", class_="star-rating")["class"][1]
+#         image_url = urljoin(
+#             url, soup.find("div", class_="item active").find("img")["src"]
+#         )
+
+#         # Create a dictionary with the extracted data and append it to the book_data list
+#         book_data.append(
+#             {
+#                 "Pdt url": product_page_url,
+#                 "UPC": universal_product_code,
+#                 "Title": title,
+#                 "Price incl VAT": price_including_tax,
+#                 "Price excl VAT": price_excluding_tax,
+#                 "Nb available": number_available,
+#                 "Pdt description": product_description,
+#                 "Category": category,
+#                 "Review Rating": review_rating,
+#                 "Img url": image_url,
+#             }
+#         )
+
+#     return book_data  # Return the list of extracted book data
+
+ # ======================================TEST======================================
 def extract_data(book_urls):
     book_data = []  # Initialize an empty list to store book data
 
@@ -80,66 +155,63 @@ def extract_data(book_urls):
 
         response = requests.get(url)  # Send a GET request to the URL
         html_content = response.content  # Get the content of the response
-        soup = BeautifulSoup(
-            html_content, "html.parser"
-        )  # Create a BeautifulSoup object for parsing HTML
+        soup = BeautifulSoup(html_content, "html.parser")  # Create a BeautifulSoup object for parsing HTML
 
-        # Extract various data from the HTML using BeautifulSoup .find
-        product_page_url = url
-        universal_product_code = (
-            soup.find("table", class_="table-striped").find("td").text
-        )
-        title = soup.find("div", class_="product_main").find("h1").text
-        price_including_tax = (
-            soup.find("th", string="Price (incl. tax)")
-            .find_next_sibling("td")
-            .string.strip("£")
-        )
-        price_excluding_tax = (
-            soup.find("th", string="Price (excl. tax)")
-            .find_next_sibling("td")
-            .string.strip("£")
-        )
+        # Initialize variables for data extraction
+        product_page_url = None
+        universal_product_code = None
+        title = None
+        price_including_tax = None
+        price_excluding_tax = None
+        number_available = None
+        product_description = None
+        category = None
+        review_rating = None
+        image_url = None
 
-        availability_text = soup.find("p", class_="instock availability").text.strip()
-        match = re.search(
-            r"\d+", availability_text
-        )  # Search for any sequence of digits
-        number_available = match.group() if match else None
-
-        # extracted_text = (
-        #     soup.find("div", {"id": "product_description"})
-        #     .find_next("p")
-        #     .string.strip()
-        # )
-        # product_description = (
-        #     normalize("NFKD", extracted_text)
-        #     .encode("ascii", "ignore")
-        #     .decode("utf-8")
-        #     .strip()
-        # )
-        # ======================================TEST======================================
         try:
-            extracted_text = (
-                soup.find("div", {"id": "product_description"})
-                .find_next("p")
-                .string.strip()
+            # Extract various data from the HTML using BeautifulSoup .find
+            product_page_url = url
+            universal_product_code = soup.find("table", class_="table-striped").find("td").text
+            title = soup.find("div", class_="product_main").find("h1").text
+            price_including_tax = (
+                soup.find("th", string="Price (incl. tax)")
+                .find_next_sibling("td")
+                .string.strip("£")
             )
-            product_description = (
-                normalize("NFKD", extracted_text)
-                .encode("ascii", "ignore")
-                .decode("utf-8")
-                .strip()
+            price_excluding_tax = (
+                soup.find("th", string="Price (excl. tax)")
+                .find_next_sibling("td")
+                .string.strip("£")
             )
-        except AttributeError:
-            product_description = None
-        # ======================================TEST======================================
 
-        category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
-        review_rating = soup.find("p", class_="star-rating")["class"][1]
-        image_url = urljoin(
-            url, soup.find("div", class_="item active").find("img")["src"]
-        )
+            availability_text = soup.find("p", class_="instock availability").text.strip()
+            match = re.search(r"\d+", availability_text)  # Search for any sequence of digits
+            number_available = match.group() if match else None
+
+            try:
+                extracted_text = (
+                    soup.find("div", {"id": "product_description"})
+                    .find_next("p")
+                    .string.strip()
+                )
+                product_description = (
+                    normalize("NFKD", extracted_text)
+                    .encode("ascii", "ignore")
+                    .decode("utf-8")
+                    .strip()
+                )
+            except AttributeError:
+                pass
+
+            category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
+            review_rating = soup.find("p", class_="star-rating")["class"][1]
+            image_url = urljoin(url, soup.find("div", class_="item active").find("img")["src"])
+
+        except Exception as e:
+            print(f"An error occurred while extracting data for URL: {url}")
+            print(f"Error details: {str(e)}")
+            continue
 
         # Create a dictionary with the extracted data and append it to the book_data list
         book_data.append(
@@ -158,6 +230,9 @@ def extract_data(book_urls):
         )
 
     return book_data  # Return the list of extracted book data
+
+
+ # ======================================TEST======================================
 
 
 # Function to save data to a CSV file
@@ -209,3 +284,5 @@ directory = r"C:\Users\johan\Desktop"
 
 # Call the function to save data to CSV files for all categories
 save_data_to_csv_all_categories(directory)
+
+# ======================================TEST======================================
