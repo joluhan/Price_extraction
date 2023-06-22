@@ -190,12 +190,19 @@ def extract_data(book_urls):
         #     else None
         # )
         # ======================================TEST======================================
-        
-        if extracted_text is None:
-            continue  # Skip this book if product description is missing
+        # condition if product_description none skip else continue
+        product_description = (
+            unicodedata.normalize("NFKD", extracted_text).strip()
+            if extracted_text
+            else None
+        )
 
-        else:
-            product_description = unicodedata.normalize("NFKD", extracted_text).strip()
+
+        # if extracted_text is None:
+        #     continue  # Skip this book if product description is missing
+
+        # else:
+        #     product_description = unicodedata.normalize("NFKD", extracted_text).strip()
         # ======================================TEST======================================
 
         category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
