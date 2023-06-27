@@ -1,4 +1,9 @@
-# **Instructions pour l'environnement virtuel et l'exécution du code d'application**
+# Project Function
+
+The project is a Python application that performs data extraction and image saving from a website. It provides functionality to scrape book data, including product details, prices, availability, descriptions, and images, from various categories.
+
+
+## **Instructions pour l'environnement virtuel et l'exécution du code d'application**
 
 Ce code utilise Python et plusieurs bibliothèques tierces. Pour exécuter le code d'application de manière isolée, il est recommandé de créer et d'activer un environnement virtuel. Les étapes suivantes vous guideront à travers le processus :
 
@@ -50,7 +55,7 @@ pip install -r requirements.txt
 
 Cela installera toutes les bibliothèques tierces nécessaires à l'exécution du code d'application.
 
-### **Exécuter le code d'application**
+## **Exécuter le code d'application**
 1. Assurez-vous d'être toujours dans le répertoire où vous avez enregistré le code d'application et que l'environnement virtuel est actif.
 
 2. Exécutez le code d'application à l'aide de la commande suivante :
@@ -65,3 +70,44 @@ Remplacez "nom_du_fichier.py" par le nom réel du fichier Python contenant le co
 3. Le code d'application sera exécuté, et vous verrez les messages d'état et les informations affichés dans votre terminal.
 
 4. Les données extraites seront enregistrées dans des fichiers CSV dans le répertoire spécifié dans le code d'application.
+
+
+
+### How to Execute the Application
+
+To execute the application and perform data extraction and image saving, follow these steps:
+
+1. Clone the repository: 
+   ```
+   git clone https://github.com/your-username/your-repo.git
+   ```
+
+2. Navigate to the project directory:
+   ```
+   cd project-directory
+   ```
+
+3. Install the required dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+
+4. Update the code:
+   - Open the Python file containing the code (e.g., `main.py`) in a text editor.
+   - Modify the `base_url` variable with the desired URL to scrape book data from.
+   - Update the `directory` variable with the desired directory to save the extracted data and images.
+
+5. Run the application:
+   ```
+   python main.py
+   ```
+
+6. Wait for the extraction process to complete. The application will display progress messages, indicating successful or unsuccessful access to URLs and the processing of each book's data.
+
+7. Once the process is finished, the extracted data will be saved in separate CSV files for each book category within the specified directory. The images will be downloaded and saved in the same directory, each with a unique filename.
+
+8. You can access the extracted data and images for further analysis or use.
+
+Please note that you may need to customize the code to fit your specific requirements, such as handling different websites or adapting the data extraction process.
+
+Make sure you have a stable internet connection before executing the application.
