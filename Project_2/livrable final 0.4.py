@@ -249,3 +249,9 @@ directory = r"C:\Users\johan\Desktop"
 
 # Call the function to save data to CSV files for all categories
 save_data_to_csv_all_categories(directory)
+
+
+# >>>>==============================IMPROVEMENTS==============================
+# create folders for each category that store images and csv file
+# each folder will have the name of its category
+# ==============================IMPROVEMENTS==============================<<<<
