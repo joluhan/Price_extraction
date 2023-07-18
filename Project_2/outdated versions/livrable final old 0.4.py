@@ -1,3 +1,6 @@
+# ============================== Étape 4 : Savegarder les images ==============================
+
+
 import requests
 from bs4 import BeautifulSoup
 import csv
@@ -72,24 +75,6 @@ def extract_urls(list_urls):
     return urls
 
 
-# Function to transform the review rating from string to integer
-def transform_review_rating(review_rating):
-    # Dictionary mapping string ratings to corresponding integers
-    rating_dict = {
-        "zero": 0,
-        "one": 1,
-        "two": 2,
-        "three": 3,
-        "four": 4,
-        "five": 5,
-    }
-
-    if review_rating.lower() in rating_dict:  # Convert review_rating to lowercase
-        return rating_dict[review_rating.lower()]
-    else:
-        print("Invalid rating")
-        return None
-
 # Function to extract data from URL list and download images
 def extract_data(book_urls, directory):
     book_data = []  # Initialize an empty list to store book data
@@ -157,9 +142,30 @@ def extract_data(book_urls, directory):
                 pass
 
             category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
-
             review_rating = soup.find("p", class_="star-rating")["class"][1]
-            review_rating = transform_review_rating(review_rating)
+            # ======================================TEST======================================
+            # Dictionary mapping string ratings to corresponding integers
+            rating_dict = {
+                "zero": 0,
+                "one": 1,
+                "two": 2,
+                "three": 3,
+                "four": 4,
+                "five": 5,
+            }
+
+            # Get the string rating
+            review_rating = soup.find("p", class_="star-rating")["class"][1]
+
+            # Check if the string rating exists in the dictionary
+            if review_rating in rating_dict:
+                # If it does, assign the corresponding integer value
+                transformed_rating = rating_dict[review_rating]
+                print(transformed_rating)
+            else:
+                # Handle the case where the string rating is not found in the dictionary
+                print("Invalid rating")
+            # ======================================TEST======================================
 
             image_url = urljoin(
                 url, soup.find("div", class_="item active").find("img")["src"]
@@ -263,7 +269,13 @@ def save_data_to_csv_all_categories(directory):
 
 
 # Define the directory where the files will be saved
-directory = r"C:\Users\johan\Desktop\New folder"
+directory = r"C:\Users\johan\Desktop\"
 
 # Call the function to save data to CSV files for all categories
 save_data_to_csv_all_categories(directory)
+
+
+# >>>>==============================IMPROVEMENTS==============================
+# create folders for each category that store images and csv file
+# each folder will have the name of its category
+# ==============================IMPROVEMENTS==============================<<<<
