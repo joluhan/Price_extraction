@@ -143,6 +143,10 @@ def extract_data(book_urls, directory):
 
             category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
             review_rating = soup.find("p", class_="star-rating")["class"][1]
+            # ======================================TEST======================================
+
+            # ======================================TEST======================================
+
             image_url = urljoin(
                 url, soup.find("div", class_="item active").find("img")["src"]
             )
