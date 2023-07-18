@@ -1,0 +1,279 @@
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+from bs4 import BeautifulSoup
+import csv
+import os
+import re
+from unicodedata import normalize
+from urllib.parse import urljoin
+
+
+# Function to extract category URL
+def category_urls_list(base_url):
+    category_urls_list = []  # Create an empty list to store category URLs
+
+    response = requests.get(base_url)  # Send a GET request to the specified URL
+    html_content = response.content  # Get the content of the response
+    soup = BeautifulSoup(html_content, "html.parser")  # Parse the HTML content
+
+    category_list = soup.find("ul", class_="nav-list")  # Find the category list element
+    category_items = category_list.find_all(
+        "li"
+    )  # Find all list items within the category list
+
+    for index, category_item in enumerate(category_items):
+        if index > 0:  # Start appending from the second element
+            category_url = urljoin(
+                base_url, category_item.find("a")["href"]
+            )  # Get the URL of the category item
+            category_urls_list.append(
+                category_url
+            )  # Append the category URL to the list
+
+    return category_urls_list  # Return the list of category URLs
+
+
+# Function to extract book URLs from each category
+def extract_urls(list_urls):
+    urls = []
+
+    for url in list_urls:
+        response = requests.get(url)  # Send a GET request to the specified URL
+        html_content = response.content  # Retrieve the content of the response
+
+        if response.status_code == 200:  # Check if the request was successful
+            print(f"Access to {url} successful")
+        else:
+            print(f"Access to {url} unsuccessful")
+
+        soup = BeautifulSoup(html_content, "html.parser")  # Parse the HTML content
+
+        url_home = response.url  # Get the base URL of the page
+
+        # Find all article elements with the specified class
+        articles = soup.find_all("article", class_="product_pod")
+        for article in articles:
+            href = article.find("h3").find("a")[
+                "href"
+            ]  # Find the href attribute of the <a> element
+            absolute_url = urljoin(
+                url_home, href
+            )  # Convert relative URL to absolute URL
+            urls.append(absolute_url)  # Add the absolute URL to the list of URLs
+
+        next_link = soup.find("li", class_="next")  # Find the next page link
+        if next_link is None:
+            break  # Exit the loop if there is no next page
+
+        next_page_url = urljoin(
+            url_home, next_link.find("a")["href"]
+        )  # Get the URL for the next page
+        list_urls.append(next_page_url)  # Append the next page URL to the list of URLs
+
+    return urls
+
+
+# Function to transform the review rating from string to integer
+def transform_review_rating(review_rating):
+    # Dictionary mapping string ratings to corresponding integers
+    rating_dict = {
+        "zero": 0,
+        "one": 1,
+        "two": 2,
+        "three": 3,
+        "four": 4,
+        "five": 5,
+    }
+
+    if review_rating.lower() in rating_dict:  # Convert review_rating to lowercase
+        return rating_dict[review_rating.lower()]
+    else:
+        print("Invalid rating")
+        return None
+
+
+# Function to extract data from URL list and download images
+def extract_data(book_urls, directory):
+    book_data = []  # Initialize an empty list to store book data
+
+    for url in book_urls:
+        print(f"Processing URL: {url}")  # Print the URL being processed
+
+        try:
+            session = requests.Session()
+            retry_strategy = Retry(
+                total=3, backoff_factor=1, status_forcelist=[ 500, 502, 503, 504 ]
+            )
+            adapter = HTTPAdapter(max_retries=retry_strategy)
+            session.mount("https://", adapter)
+            session.mount("http://", adapter)
+            response = session.get(url, timeout=10)  # Send a GET request to the URL
+            html_content = response.content  # Get the content of the response
+            soup = BeautifulSoup(
+                html_content, "html.parser"
+            )  # Create a BeautifulSoup object for parsing HTML
+
+            # Initialize variables for data extraction
+            product_page_url = None
+            universal_product_code = None
+            title = None
+            price_including_tax = None
+            price_excluding_tax = None
+            number_available = None
+            product_description = None
+            category = None
+            review_rating = None
+            image_url = None
+
+            # Extract various data from the HTML using BeautifulSoup .find
+            product_page_url = url
+            universal_product_code = (
+                soup.find("table", class_="table-striped").find("td").text
+            )
+            title = soup.find("div", class_="product_main").find("h1").text
+            price_including_tax = (
+                soup.find("th", string="Price (incl. tax)")
+                .find_next_sibling("td")
+                .string.strip("£")
+            )
+            price_excluding_tax = (
+                soup.find("th", string="Price (excl. tax)")
+                .find_next_sibling("td")
+                .string.strip("£")
+            )
+
+            availability_text = soup.find(
+                "p", class_="instock availability"
+            ).text.strip()
+            match = re.search(
+                r"\d+", availability_text
+            )  # Search for any sequence of digits
+            number_available = match.group() if match else None
+
+            try:
+                extracted_text = (
+                    soup.find("div", {"id": "product_description"})
+                    .find_next("p")
+                    .string.strip()
+                )
+                product_description = (
+                    normalize("NFKD", extracted_text)
+                    .encode("ascii", "ignore")
+                    .decode("utf-8")
+                    .strip()
+                )
+            except AttributeError:
+                pass
+
+            category = soup.find("ul", class_="breadcrumb").find_all("a")[2].text
+
+            review_rating = soup.find("p", class_="star-rating")["class"][1]
+            review_rating = transform_review_rating(review_rating)
+
+            image_url = urljoin(
+                url, soup.find("div", class_="item active").find("img")["src"]
+            )
+
+            # Download the image
+            image_filename = download_image(
+                image_url, directory, universal_product_code
+            )
+
+            # Create a dictionary with the extracted data and append it to the book_data list
+            book_data.append(
+                {
+                    "Pdt url": product_page_url,
+                    "UPC": universal_product_code,
+                    "Title": title,
+                    "Price incl VAT": price_including_tax,
+                    "Price excl VAT": price_excluding_tax,
+                    "Nb available": number_available,
+                    "Pdt description": product_description,
+                    "Category": category,
+                    "Review Rating": review_rating,
+                    "Img url": image_url,
+                    "Image Filename": image_filename,  # Add the image filename to the dictionary
+                }
+            )
+
+        except Exception as e:
+            print(f"An error occurred while extracting data for URL: {url}")
+            print(f"Error details: {str(e)}")
+            continue
+
+    return book_data  # Return the list of extracted book data
+
+
+# Function to download the image from the given URL and save it with a unique identifier
+def download_image(image_url, directory, unique_identifier):
+    response = requests.get(image_url)  # Send a GET request to the image URL
+    image_content = response.content  # Get the content of the response
+    image_extension = os.path.splitext(image_url)[
+        1
+    ]  # Get the file extension from the URL
+
+    # Generate a unique filename using the unique identifier and the image extension
+    image_filename = f"{unique_identifier}{image_extension}"
+    filepath = os.path.join(directory, image_filename)
+
+    with open(filepath, "wb") as image_file:
+        image_file.write(image_content)
+
+    print(f"Image downloaded: {image_filename}")
+
+    return image_filename
+
+
+# Function to save data to a CSV file
+def save_data_to_csv(book_data, directory, category):
+    fieldnames = [
+        "Pdt url",
+        "UPC",
+        "Title",
+        "Price incl VAT",
+        "Price excl VAT",
+        "Nb available",
+        "Pdt description",
+        "Category",
+        "Review Rating",
+        "Img url",
+        "Image Filename",
+    ]
+    filename = f"book_data_{category}.csv"  # Create the filename for the category
+    filepath = os.path.join(directory, filename)
+
+    with open(filepath, "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(book_data)
+
+    print(f"Data has been successfully saved to {filepath}")
+
+
+# Function that uses functions to save data to a CSV file for each category
+def save_data_to_csv_all_categories(directory):
+    base_url = "https://books.toscrape.com/catalogue/page-1.html"
+    # Extract URLs
+    list_urls = category_urls_list(base_url)
+
+    for category_url in list_urls:
+        category_name = category_url.split("/")[
+            -2
+        ]  # Extract the category name from the URL
+        book_urls = extract_urls(
+            [category_url]
+        )  # Extract URLs for books in the category
+        book_data = extract_data(
+            book_urls, directory
+        )  # Extract data for books in the category
+
+        if book_data:
+            save_data_to_csv(book_data, directory, category_name)
+
+
+# Define the directory where the files will be saved
+directory = r"C:\Users\johan\Desktop\New folder"
+
+# Call the function to save data to CSV files for all categories
+save_data_to_csv_all_categories(directory)
