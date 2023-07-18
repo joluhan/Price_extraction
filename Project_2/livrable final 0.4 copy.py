@@ -90,8 +90,6 @@ def transform_review_rating(review_rating):
         print("Invalid rating")
         return None
 
-
-
 # Function to extract data from URL list and download images
 def extract_data(book_urls, directory):
     book_data = []  # Initialize an empty list to store book data
